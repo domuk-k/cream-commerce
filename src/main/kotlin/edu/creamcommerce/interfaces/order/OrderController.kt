@@ -61,7 +61,6 @@ class OrderController {
             // 결제 로직 (실제로는 결제 처리 서비스를 호출)
             val updatedOrder = order.copy(
                 status = "PAID",
-                paymentMethod = paymentRequest.paymentMethod
             )
 
             // 업데이트된 주문으로 대체
