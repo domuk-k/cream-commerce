@@ -17,18 +17,4 @@
 
 ### ⛳ 개발 진행 순서 (Milestone)
 
-단계 내용
-
-STEP3
-
-- [x] Day 1 목표 정의, 도메인/요구사항 설계
-- [x] Day 2 UML, 시퀀스 다이어그램, ERD, 도메인 클래스 설계
-
-STEP4
-
-- [ ] Day 3 테스트 설계, 레이어드 아키텍처 기초구현
-- [ ] Day 4 Mock API / Swagger 설계
-
-RETRO
-
-- [ ] Day 5 통합e2e 테스트, 회고, PR 작성
+바로가기 [🔗](https://github.com/users/domuk-k/projects/6)
