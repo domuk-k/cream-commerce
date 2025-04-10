@@ -46,4 +46,4 @@ class PointController(
     fun getPointHistories(@PathVariable pointId: String): ResponseEntity<ApiResponse<PointHistoryListDto>> {
         return pointFacade.getPointHistories(PointId(pointId)).toSuccessResponse()
     }
-} 
+}
