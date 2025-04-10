@@ -27,4 +27,6 @@ fun <T> T.toSuccessResponse(message: String? = null): ResponseEntity<ApiResponse
     return ResponseEntity.ok(ApiResponse.success(this, message))
 }
 
-
+fun emptySuccessResponse(): ResponseEntity<ApiResponse<Nothing>> {
+    return ResponseEntity.ok(ApiResponse())
+}
