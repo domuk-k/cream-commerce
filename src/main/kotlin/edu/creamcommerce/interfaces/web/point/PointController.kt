@@ -1,4 +1,4 @@
-package edu.creamcommerce.interfaces.web
+package edu.creamcommerce.interfaces.web.point
 
 import edu.creamcommerce.application.point.dto.PointDto
 import edu.creamcommerce.application.point.dto.PointHistoryListDto
@@ -6,9 +6,8 @@ import edu.creamcommerce.application.point.dto.command.ChargePointCommand
 import edu.creamcommerce.application.point.dto.command.UsePointCommand
 import edu.creamcommerce.application.point.facade.PointFacade
 import edu.creamcommerce.domain.point.PointId
-import edu.creamcommerce.interfaces.request.PointRequest
-import edu.creamcommerce.interfaces.response.ApiResponse
-import edu.creamcommerce.interfaces.response.toSuccessResponse
+import edu.creamcommerce.interfaces.web.ApiResponse
+import edu.creamcommerce.interfaces.web.toSuccessResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid

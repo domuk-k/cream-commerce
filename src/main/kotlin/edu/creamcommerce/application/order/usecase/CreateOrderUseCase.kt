@@ -3,7 +3,7 @@ package edu.creamcommerce.application.order.usecase
 import edu.creamcommerce.application.order.dto.command.CreateOrderCommand
 import edu.creamcommerce.application.order.dto.query.OrderDto
 import edu.creamcommerce.application.order.dto.query.toDomain
-import edu.creamcommerce.domain.order.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.order.OrderItem
 import edu.creamcommerce.domain.order.OrderRepository

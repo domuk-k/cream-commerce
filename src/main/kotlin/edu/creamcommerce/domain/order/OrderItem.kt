@@ -1,5 +1,6 @@
 package edu.creamcommerce.domain.order
 
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.product.ProductId
 import java.time.LocalDateTime
 import java.util.*
@@ -20,7 +21,7 @@ class OrderItem private constructor(
             price: Money,
             quantity: Int
         ): OrderItem {
-            if(quantity <= 0) {
+            if (quantity <= 0) {
                 throw IllegalArgumentException("주문 수량은 0보다 커야 합니다.")
             }
             

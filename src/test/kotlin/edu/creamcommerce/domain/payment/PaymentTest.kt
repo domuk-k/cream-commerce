@@ -1,12 +1,11 @@
 package edu.creamcommerce.domain.payment
 
-import edu.creamcommerce.domain.order.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.OrderId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import java.math.BigDecimal
 import java.util.*
 
 class PaymentTest : BehaviorSpec({

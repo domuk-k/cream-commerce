@@ -1,6 +1,6 @@
 package edu.creamcommerce.interfaces
 
-import edu.creamcommerce.interfaces.response.ApiResponse
+import edu.creamcommerce.interfaces.web.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -8,7 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import java.util.NoSuchElementException
 import java.util.concurrent.TimeoutException
 
 @RestControllerAdvice

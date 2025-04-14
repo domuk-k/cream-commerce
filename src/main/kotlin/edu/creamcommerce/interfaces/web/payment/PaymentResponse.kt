@@ -1,11 +1,7 @@
-package edu.creamcommerce.interfaces.response
+package edu.creamcommerce.interfaces.web.payment
 
 import java.math.BigDecimal
 import java.time.LocalDateTime
-
-data class ProcessPaymentRequest(
-    val orderId: String
-)
 
 data class PaymentResponse(
     val id: String,
@@ -14,4 +10,10 @@ data class PaymentResponse(
     val amount: BigDecimal,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
-) 
+)
+
+data class ProcessPaymentResponse(
+    val paymentId: String,
+    val success: Boolean,
+    val message: String
+)

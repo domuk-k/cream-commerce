@@ -1,17 +1,14 @@
-package edu.creamcommerce.interfaces.web
+package edu.creamcommerce.interfaces.web.order
 
-import edu.creamcommerce.application.order.dto.command.CreateOrderCommand
-import edu.creamcommerce.application.order.dto.command.OrderItemCommand
 import edu.creamcommerce.application.order.dto.query.OrderDto
 import edu.creamcommerce.application.order.usecase.CancelOrderUseCase
 import edu.creamcommerce.application.order.usecase.CreateOrderUseCase
 import edu.creamcommerce.application.order.usecase.FindOrdersUseCase
 import edu.creamcommerce.application.order.usecase.GetOrderByIdUseCase
 import edu.creamcommerce.domain.order.OrderId
-import edu.creamcommerce.interfaces.response.ApiResponse
-import edu.creamcommerce.interfaces.response.CreateOrderRequest
-import edu.creamcommerce.interfaces.response.emptySuccessResponse
-import edu.creamcommerce.interfaces.response.toSuccessResponse
+import edu.creamcommerce.interfaces.web.ApiResponse
+import edu.creamcommerce.interfaces.web.emptySuccessResponse
+import edu.creamcommerce.interfaces.web.toSuccessResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -30,15 +27,7 @@ class OrderController(
     @PostMapping
     @Operation(summary = "주문 생성", description = "새로운 주문을 생성합니다.")
     fun createOrder(@RequestBody request: CreateOrderRequest): ResponseEntity<ApiResponse<OrderDto>> {
-        val command = CreateOrderCommand(
-            userId = request.userId,
-            items = request.items.map {
-                OrderItemCommand(productId = it.productId, quantity = it.quantity)
-            },
-            shippingAddress = request.shippingAddress
-        )
-        
-        val result = createOrderUseCase(command)
+        val result = createOrderUseCase(request.toCommand())
         return result.toSuccessResponse()
     }
     

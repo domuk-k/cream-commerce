@@ -2,9 +2,9 @@ package edu.creamcommerce.application.order.usecase
 
 import edu.creamcommerce.application.order.dto.command.CreateOrderCommand
 import edu.creamcommerce.application.order.dto.command.OrderItemCommand
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.order.OrderRepository
-import edu.creamcommerce.domain.product.Money
 import edu.creamcommerce.domain.product.Product
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductRepository

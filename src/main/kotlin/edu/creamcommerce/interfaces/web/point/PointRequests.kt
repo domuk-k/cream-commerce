@@ -1,4 +1,4 @@
-package edu.creamcommerce.interfaces.request
+package edu.creamcommerce.interfaces.web.point
 
 import java.math.BigDecimal
 

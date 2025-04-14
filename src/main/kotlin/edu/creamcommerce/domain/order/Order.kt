@@ -1,7 +1,6 @@
 package edu.creamcommerce.domain.order
 
-import edu.creamcommerce.domain.product.ProductId
-import java.math.BigDecimal
+import edu.creamcommerce.domain.common.Money
 import java.time.LocalDateTime
 import java.util.*
 
@@ -133,19 +132,6 @@ value class OrderId(val value: String) {
     companion object {
         fun create(): OrderId = OrderId(UUID.randomUUID().toString())
     }
-}
-
-@JvmInline
-value class Money(val amount: BigDecimal) {
-    companion object {
-        val ZERO = Money(BigDecimal.ZERO)
-    }
-    
-    constructor(amount: Int) : this(BigDecimal.valueOf(amount.toLong()))
-    
-    operator fun plus(other: Money): Money = Money(amount + other.amount)
-    operator fun minus(other: Money): Money = Money(amount - other.amount)
-    operator fun times(quantity: Int): Money = Money(amount * BigDecimal(quantity))
 }
 
 enum class OrderStatus {

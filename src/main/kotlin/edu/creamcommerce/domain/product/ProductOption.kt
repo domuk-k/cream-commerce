@@ -1,5 +1,6 @@
 package edu.creamcommerce.domain.product
 
+import edu.creamcommerce.domain.common.Money
 import java.util.*
 
 class ProductOption(

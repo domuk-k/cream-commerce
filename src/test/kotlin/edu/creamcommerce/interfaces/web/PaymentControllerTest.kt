@@ -8,7 +8,8 @@ import edu.creamcommerce.application.payment.dto.command.ProcessPaymentResultDto
 import edu.creamcommerce.application.payment.dto.query.PaymentResponseDto
 import edu.creamcommerce.application.payment.usecase.GetPaymentByIdUseCase
 import edu.creamcommerce.application.payment.usecase.ProcessPaymentUseCase
-import edu.creamcommerce.interfaces.response.ProcessPaymentRequest
+import edu.creamcommerce.interfaces.web.payment.PaymentController
+import edu.creamcommerce.interfaces.web.payment.ProcessPaymentRequest
 import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.every
 import io.mockk.mockk

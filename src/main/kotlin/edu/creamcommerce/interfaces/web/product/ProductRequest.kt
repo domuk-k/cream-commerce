@@ -1,4 +1,4 @@
-package edu.creamcommerce.interfaces.request
+package edu.creamcommerce.interfaces.web.product
 
 import edu.creamcommerce.application.product.dto.command.CreateProductCommand
 import edu.creamcommerce.application.product.dto.command.ProductOptionCommand

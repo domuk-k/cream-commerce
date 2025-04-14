@@ -7,8 +7,9 @@ import edu.creamcommerce.application.product.dto.query.GetProductsQuery
 import edu.creamcommerce.application.product.facade.ProductFacade
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductStatus
-import edu.creamcommerce.interfaces.request.CreateProductRequest
-import edu.creamcommerce.interfaces.request.ProductOptionRequest
+import edu.creamcommerce.interfaces.web.product.CreateProductRequest
+import edu.creamcommerce.interfaces.web.product.ProductController
+import edu.creamcommerce.interfaces.web.product.ProductOptionRequest
 import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.every
 import io.mockk.mockk

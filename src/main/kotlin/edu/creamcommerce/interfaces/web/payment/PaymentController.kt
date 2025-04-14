@@ -1,13 +1,12 @@
-package edu.creamcommerce.interfaces.web
+package edu.creamcommerce.interfaces.web.payment
 
 import edu.creamcommerce.application.payment.dto.command.ProcessPaymentCommand
 import edu.creamcommerce.application.payment.dto.command.ProcessPaymentResultDto
 import edu.creamcommerce.application.payment.dto.query.PaymentResponseDto
 import edu.creamcommerce.application.payment.usecase.GetPaymentByIdUseCase
 import edu.creamcommerce.application.payment.usecase.ProcessPaymentUseCase
-import edu.creamcommerce.interfaces.response.ApiResponse
-import edu.creamcommerce.interfaces.response.ProcessPaymentRequest
-import edu.creamcommerce.interfaces.response.toSuccessResponse
+import edu.creamcommerce.interfaces.web.ApiResponse
+import edu.creamcommerce.interfaces.web.toSuccessResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -24,13 +23,12 @@ class PaymentController(
     @PostMapping("/process")
     @Operation(summary = "결제 처리", description = "주문에 대한 결제를 처리합니다.")
     fun processPayment(@RequestBody request: ProcessPaymentRequest): ResponseEntity<ApiResponse<ProcessPaymentResultDto>> {
-        val command = ProcessPaymentCommand(orderId = request.orderId)
-        val result = processPaymentUseCase(command)
+        val result = processPaymentUseCase(ProcessPaymentCommand(orderId = request.orderId))
         
         return if (result.success) {
             result.toSuccessResponse(result.message)
         } else {
-            ResponseEntity.badRequest().body(ApiResponse.error(result.message))
+            ResponseEntity.badRequest().body(ApiResponse.Companion.error(result.message))
         }
     }
     

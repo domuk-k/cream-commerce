@@ -1,6 +1,6 @@
 package edu.creamcommerce.application.product.dto.command
 
-import edu.creamcommerce.domain.product.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.product.ProductOption
 import java.math.BigDecimal
 

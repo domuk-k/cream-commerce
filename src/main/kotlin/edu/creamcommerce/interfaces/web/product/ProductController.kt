@@ -1,13 +1,12 @@
-package edu.creamcommerce.interfaces.web
+package edu.creamcommerce.interfaces.web.product
 
 import edu.creamcommerce.application.product.dto.ProductDto
 import edu.creamcommerce.application.product.dto.ProductListDto
 import edu.creamcommerce.application.product.dto.query.GetProductsQuery
 import edu.creamcommerce.application.product.facade.ProductFacade
 import edu.creamcommerce.domain.product.ProductId
-import edu.creamcommerce.interfaces.request.CreateProductRequest
-import edu.creamcommerce.interfaces.response.ApiResponse
-import edu.creamcommerce.interfaces.response.toSuccessResponse
+import edu.creamcommerce.interfaces.web.ApiResponse
+import edu.creamcommerce.interfaces.web.toSuccessResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid

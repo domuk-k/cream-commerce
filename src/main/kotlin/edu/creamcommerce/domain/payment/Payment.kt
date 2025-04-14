@@ -1,6 +1,6 @@
 package edu.creamcommerce.domain.payment
 
-import edu.creamcommerce.domain.order.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.OrderId
 import java.time.LocalDateTime
 import java.util.*
@@ -33,7 +33,7 @@ class Payment private constructor(
     
     var amount: Money = amount
         private set
-        
+    
     fun process(): Payment {
         if (status != PaymentStatus.READY) {
             throw IllegalStateException("결제 처리는 READY 상태에서만 가능합니다. 현재 상태: $status")

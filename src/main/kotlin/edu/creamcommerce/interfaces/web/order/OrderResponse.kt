@@ -1,5 +1,7 @@
-package edu.creamcommerce.interfaces.response
+package edu.creamcommerce.interfaces.web.order
 
+import edu.creamcommerce.application.order.dto.command.CreateOrderCommand
+import edu.creamcommerce.application.order.dto.command.OrderItemCommand
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -8,6 +10,16 @@ data class CreateOrderRequest(
     val items: List<OrderItemRequestDto>,
     val shippingAddress: String
 )
+
+fun CreateOrderRequest.toCommand(): CreateOrderCommand {
+    return CreateOrderCommand(
+        userId = userId,
+        items = items.map {
+            OrderItemCommand(productId = it.productId, quantity = it.quantity)
+        },
+        shippingAddress = shippingAddress
+    )
+}
 
 data class OrderItemRequestDto(
     val productId: String,

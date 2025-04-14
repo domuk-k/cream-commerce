@@ -9,7 +9,7 @@ import edu.creamcommerce.application.product.dto.query.GetProductsQuery
 import edu.creamcommerce.application.product.usecase.CreateProductUseCase
 import edu.creamcommerce.application.product.usecase.GetProductByIdUseCase
 import edu.creamcommerce.application.product.usecase.GetProductsUseCase
-import edu.creamcommerce.domain.product.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.product.Product
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductStatus

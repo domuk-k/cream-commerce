@@ -9,7 +9,8 @@ import edu.creamcommerce.application.point.dto.command.UsePointCommand
 import edu.creamcommerce.application.point.facade.PointFacade
 import edu.creamcommerce.domain.point.PointHistoryType
 import edu.creamcommerce.domain.point.PointId
-import edu.creamcommerce.interfaces.request.PointRequest
+import edu.creamcommerce.interfaces.web.point.PointController
+import edu.creamcommerce.interfaces.web.point.PointRequest
 import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.every
 import io.mockk.mockk

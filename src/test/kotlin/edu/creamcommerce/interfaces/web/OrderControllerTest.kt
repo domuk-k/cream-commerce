@@ -9,8 +9,11 @@ import edu.creamcommerce.application.order.usecase.CancelOrderUseCase
 import edu.creamcommerce.application.order.usecase.CreateOrderUseCase
 import edu.creamcommerce.application.order.usecase.FindOrdersUseCase
 import edu.creamcommerce.application.order.usecase.GetOrderByIdUseCase
-import edu.creamcommerce.domain.order.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.product.ProductId
+import edu.creamcommerce.interfaces.web.order.CreateOrderRequest
+import edu.creamcommerce.interfaces.web.order.OrderController
+import edu.creamcommerce.interfaces.web.order.OrderItemRequestDto
 import io.kotest.core.spec.style.ShouldSpec
 import io.mockk.every
 import io.mockk.justRun
@@ -47,10 +50,10 @@ class OrderControllerTest : ShouldSpec({
     context("주문 생성") {
         should("POST /api/orders 요청 시 주문을 생성하고 생성된 주문 정보를 반환한다") {
             // given
-            val request = edu.creamcommerce.interfaces.response.CreateOrderRequest(
+            val request = CreateOrderRequest(
                 userId = "test-user",
                 items = listOf(
-                    edu.creamcommerce.interfaces.response.OrderItemRequestDto(
+                    OrderItemRequestDto(
                         productId = "prod-1",
                         quantity = 2
                     )

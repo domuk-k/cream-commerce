@@ -1,4 +1,4 @@
-package edu.creamcommerce.interfaces.response
+package edu.creamcommerce.interfaces.web
 
 import org.springframework.http.ResponseEntity
 

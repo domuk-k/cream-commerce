@@ -1,6 +1,6 @@
 package edu.creamcommerce.application.order.dto.query
 
-import edu.creamcommerce.domain.order.Money
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.product.ProductId
 import java.time.LocalDateTime
