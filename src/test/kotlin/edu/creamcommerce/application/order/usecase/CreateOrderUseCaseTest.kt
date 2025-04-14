@@ -65,7 +65,7 @@ class CreateOrderUseCaseTest : BehaviorSpec({
                 savedOrder.orderItems[0].quantity shouldBe 2
                 savedOrder.shippingAddress shouldBe "서울시 강남구 테스트로 123"
                 
-                result.totalAmount shouldBe 2000
+                result.totalAmount shouldBe Money(2000)
             }
         }
     }

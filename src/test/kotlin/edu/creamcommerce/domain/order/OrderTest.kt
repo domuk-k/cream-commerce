@@ -1,5 +1,6 @@
 package edu.creamcommerce.domain.order
 
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.product.ProductId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec

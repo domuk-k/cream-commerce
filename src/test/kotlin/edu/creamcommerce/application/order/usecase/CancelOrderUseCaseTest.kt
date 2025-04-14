@@ -1,5 +1,6 @@
 package edu.creamcommerce.application.order.usecase
 
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.*
 import edu.creamcommerce.domain.payment.Payment
 import edu.creamcommerce.domain.payment.PaymentRepository
@@ -30,11 +31,11 @@ class CancelOrderUseCaseTest : BehaviorSpec({
     
     given("PENDING 상태의 주문이 있을 때") {
         val orderId = OrderId.create()
-        val userId = "test-user"
+        val mockUserId = "test-user"
         
         val order = mockk<Order>().apply {
             every { id } returns orderId
-            every { userId } returns userId
+            every { userId } returns mockUserId
             every { status } returns OrderStatus.PENDING
             every { isPending() } returns true
             every { isPaid() } returns false
@@ -60,7 +61,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
     
     given("PAID 상태의 주문과 결제가 있을 때") {
         val orderId = OrderId.create()
-        val userId = "test-user"
+        val mockUserId = "test-user"
         val productId = ProductId.create()
         val orderAmount = Money(2000)
         
@@ -71,7 +72,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
         
         val order = mockk<Order>().apply {
             every { id } returns orderId
-            every { userId } returns userId
+            every { userId } returns mockUserId
             every { totalAmount } returns orderAmount
             every { status } returns OrderStatus.PAID
             every { isPending() } returns false
@@ -99,7 +100,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
             every { charge(any()) } returns mockk()
         }
         
-        every { pointRepository.findByUserId(userId) } returns point
+        every { pointRepository.findByUserId(mockUserId) } returns point
         
         val product = mockk<Product>().apply {
             every { increaseStock(any()) } returns this

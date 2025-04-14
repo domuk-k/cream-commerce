@@ -1,6 +1,7 @@
 package edu.creamcommerce.application.payment.usecase
 
 import edu.creamcommerce.application.payment.dto.command.ProcessPaymentCommand
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.*
 import edu.creamcommerce.domain.payment.*
 import edu.creamcommerce.domain.point.Point

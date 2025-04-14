@@ -3,6 +3,7 @@ package edu.creamcommerce.application.product.usecase
 import edu.creamcommerce.application.product.dto.command.CreateProductCommand
 import edu.creamcommerce.application.product.dto.command.ProductOptionCommand
 import edu.creamcommerce.application.product.dto.command.toDomain
+import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.product.*
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldHaveSize

@@ -131,6 +131,8 @@ class ProductControllerTest : ShouldSpec({
                 options = emptyList(),
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now(),
+                stock = 0,
+                stockStatus = "InStock"
             )
         }
     }
