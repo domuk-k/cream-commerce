@@ -64,16 +64,20 @@ class ProcessPaymentUseCase(
                 val product = productRepository.findById(orderItem.productId)
                     ?: throw IllegalStateException("상품을 찾을 수 없습니다: ${orderItem.productId.value}")
                 
+                // 상품 옵션 찾기
+                val option = product.options.find { it.id == orderItem.optionId }
+                    ?: throw IllegalStateException("상품 옵션을 찾을 수 없습니다: ${orderItem.optionId.value}")
+                
                 // 재고 확인
-                if (!product.hasEnoughStock(orderItem.quantity)) {
-                    val failure = payment.fail("상품 재고가 부족합니다: ${orderItem.productName}")
+                if (!option.hasEnoughStock(orderItem.quantity)) {
+                    val failure = payment.fail("상품 옵션 재고가 부족합니다: ${orderItem.productName} - ${option.name}")
                     paymentRepository.save(payment)
                     paymentFailureRepository.save(failure)
                     
                     return ProcessPaymentResultDto(
                         success = false,
                         paymentId = payment.id.value,
-                        message = "상품 재고가 부족합니다: ${orderItem.productName}"
+                        message = "상품 옵션 재고가 부족합니다: ${orderItem.productName} - ${option.name}"
                     )
                 }
             }
@@ -88,7 +92,13 @@ class ProcessPaymentUseCase(
             // 상품 재고 차감
             for (orderItem in order.orderItems) {
                 val product = productRepository.findById(orderItem.productId)!!
-                product.decreaseStock(orderItem.quantity)
+                
+                // 상품 옵션 찾기
+                val option = product.options.find { it.id == orderItem.optionId }!!
+                
+                // 옵션 재고 차감
+                option.decreaseStock(orderItem.quantity)
+                
                 productRepository.save(product)
             }
             

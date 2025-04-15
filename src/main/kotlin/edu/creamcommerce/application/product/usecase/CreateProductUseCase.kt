@@ -19,7 +19,8 @@ class CreateProductUseCase(
             ProductOption.create(
                 name = optionCommand.name,
                 additionalPrice = Money(optionCommand.additionalPrice ?: BigDecimal.ZERO),
-                stock = optionCommand.stock
+                stock = optionCommand.stock,
+                sku = optionCommand.sku,
             )
         }
         

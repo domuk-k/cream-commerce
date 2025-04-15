@@ -71,13 +71,17 @@ data class AddProductOptionRequest(
     val additionalPrice: BigDecimal,
     
     @field:PositiveOrZero(message = "재고는 0 이상이어야 합니다.")
-    val stock: Int
+    val stock: Int,
+    
+    @field:NotBlank(message = "SKU는 필수입니다.")
+    val sku: String
 ) {
     fun toCommand(): AddProductOptionCommand {
         return AddProductOptionCommand(
             name = name,
             additionalPrice = additionalPrice,
-            stock = stock
+            stock = stock,
+            sku = sku
         )
     }
 }

@@ -5,6 +5,7 @@ import edu.creamcommerce.application.order.dto.command.OrderItemCommand
 import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.order.OrderRepository
+import edu.creamcommerce.domain.product.OptionId
 import edu.creamcommerce.domain.product.Product
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductRepository
@@ -24,6 +25,7 @@ class CreateOrderUseCaseTest : BehaviorSpec({
     
     given("상품이 존재하고 활성화되어 있을 때") {
         val productId = ProductId.create()
+        val optionId = OptionId.create()
         val productPrice = Money(1000)
         val product = mockk<Product>().apply {
             every { id } returns productId
@@ -45,6 +47,7 @@ class CreateOrderUseCaseTest : BehaviorSpec({
                 items = listOf(
                     OrderItemCommand(
                         productId = productId.value,
+                        optionId = optionId.value,
                         quantity = 2
                     )
                 ),
@@ -80,6 +83,7 @@ class CreateOrderUseCaseTest : BehaviorSpec({
                 items = listOf(
                     OrderItemCommand(
                         productId = nonExistentProductId.value,
+                        optionId = OptionId.create().value,
                         quantity = 2
                     )
                 ),
@@ -111,6 +115,7 @@ class CreateOrderUseCaseTest : BehaviorSpec({
                 items = listOf(
                     OrderItemCommand(
                         productId = inactiveProductId.value,
+                        optionId = OptionId.create().value,
                         quantity = 2
                     )
                 ),

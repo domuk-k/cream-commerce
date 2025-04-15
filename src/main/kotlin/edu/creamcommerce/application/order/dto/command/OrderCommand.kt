@@ -8,5 +8,6 @@ data class CreateOrderCommand(
 
 data class OrderItemCommand(
     val productId: String,
+    val optionId: String,
     val quantity: Int
 )

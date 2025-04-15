@@ -15,7 +15,7 @@ fun CreateOrderRequest.toCommand(): CreateOrderCommand {
     return CreateOrderCommand(
         userId = userId,
         items = items.map {
-            OrderItemCommand(productId = it.productId, quantity = it.quantity)
+            OrderItemCommand(productId = it.productId, optionId = it.optionId, quantity = it.quantity)
         },
         shippingAddress = shippingAddress
     )
@@ -23,6 +23,7 @@ fun CreateOrderRequest.toCommand(): CreateOrderCommand {
 
 data class OrderItemRequestDto(
     val productId: String,
+    val optionId: String,
     val quantity: Int
 )
 

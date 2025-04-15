@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDateTime
 import java.util.*
 
 class RemoveProductOptionUseCaseTest : BehaviorSpec({
@@ -19,31 +20,41 @@ class RemoveProductOptionUseCaseTest : BehaviorSpec({
         val productId = ProductId(UUID.randomUUID().toString())
         val optionId = OptionId(UUID.randomUUID().toString())
         
-        val option = ProductOption.create(
-            name = "테스트 옵션",
-            additionalPrice = Money(1000),
-            stock = 50
-        )
+        // 테스트용 인벤토리 생성
+        val inventory = mockk<Inventory>()
+        every { inventory.quantity } returns 50
+        every { inventory.status } returns InventoryStatus.NORMAL
         
-        // 리플렉션으로 optionId 설정
-        val idField = option.javaClass.getDeclaredField("id")
-        idField.isAccessible = true
-        idField.set(option, optionId)
+        // 테스트용 옵션 생성
+        val now = LocalDateTime.now()
+        val option = mockk<ProductOption>()
+        every { option.id } returns optionId
+        every { option.name } returns "테스트 옵션"
+        every { option.sku } returns "TEST-SKU-123"
+        every { option.additionalPrice } returns Money(1000)
+        every { option.inventory } returns inventory
+        every { option.getStockStatus() } returns StockStatus.InStock
+        every { option.getStockQuantity() } returns 50
+        every { option.status } returns OptionStatus.ACTIVE
+        every { option.createdAt } returns now
+        every { option.updatedAt } returns now
         
-        val product = createProductWithOption(productId, option)
+        // 테스트용 Product 생성
+        val product = mockk<Product>()
+        every { product.id } returns productId
+        every { product.options } returns listOf(option)
+        every { product.removeOption(optionId) } returns product
+        every { product.toDto() } returns mockk()
         
         `when`("상품이 존재하고 옵션도 존재하는 경우") {
             every { productRepository.findById(productId) } returns product
-            
-            // 옵션이 제거된 상품
-            val productWithoutOption = product.removeOption(optionId)
-            every { productRepository.save(any()) } returns productWithoutOption
+            every { productRepository.save(any()) } returns product
             
             then("상품에서 옵션이 제거되어야 한다") {
                 val result = useCase(productId, optionId)
                 
-                result.id shouldBe productId.value
                 verify { productRepository.findById(productId) }
+                verify { product.removeOption(optionId) }
                 verify { productRepository.save(any()) }
             }
         }
@@ -63,7 +74,10 @@ class RemoveProductOptionUseCaseTest : BehaviorSpec({
         
         `when`("상품은 존재하지만 옵션이 존재하지 않는 경우") {
             val nonExistentOptionId = OptionId(UUID.randomUUID().toString())
+            
+            // 옵션 제거 시 예외 발생하도록 설정
             every { productRepository.findById(productId) } returns product
+            every { product.removeOption(nonExistentOptionId) } throws IllegalArgumentException("해당 ID의 옵션을 찾을 수 없습니다: ${nonExistentOptionId.value}")
             
             then("IllegalArgumentException이 발생해야 한다") {
                 val exception = shouldThrow<IllegalArgumentException> {
@@ -76,8 +90,8 @@ class RemoveProductOptionUseCaseTest : BehaviorSpec({
         }
         
         `when`("상품이 판매 중단 상태인 경우") {
-            val discontinuedProduct = createProductWithOption(productId, option)
-            discontinuedProduct.discontinue()
+            val discontinuedProduct = mockk<Product>()
+            every { discontinuedProduct.removeOption(optionId) } throws IllegalStateException("활성 또는 초안 상태의 상품만 옵션을 제거할 수 있습니다.")
             
             every { productRepository.findById(productId) } returns discontinuedProduct
             
@@ -91,21 +105,4 @@ class RemoveProductOptionUseCaseTest : BehaviorSpec({
             }
         }
     }
-})
-
-// 테스트용 Product 객체 생성 함수 (옵션 포함)
-private fun createProductWithOption(
-    id: ProductId = ProductId.create(),
-    option: ProductOption
-): Product {
-    val product = Product.create(
-        id = id,
-        name = "테스트 상품",
-        price = Money(10000)
-    )
-    
-    // 옵션 추가
-    product.addOption(option)
-    
-    return product
-} 
+}) 

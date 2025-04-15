@@ -12,30 +12,24 @@ class Product private constructor(
     status: ProductStatus,
     private val _options: MutableList<ProductOption> = mutableListOf(),
     val createdAt: LocalDateTime,
-    var updatedAt: LocalDateTime,
-    stock: Int = 0,
-    lowStockThreshold: Int = 10
+    var updatedAt: LocalDateTime
 ) {
     companion object {
         fun create(
             id: ProductId? = null,
             name: String,
             price: Money,
-            options: List<ProductOption> = emptyList(),
-            stock: Int = 0,
-            lowStockThreshold: Int = 10
+            options: List<ProductOption> = emptyList()
         ): Product {
             val now = LocalDateTime.now()
             return Product(
                 id = id ?: ProductId.create(),
                 name = name,
                 price = price,
-                status = ProductStatus.Active,
+                status = ProductStatus.Draft,
                 _options = options.toMutableList(),
                 createdAt = now,
-                updatedAt = now,
-                stock = stock,
-                lowStockThreshold = lowStockThreshold
+                updatedAt = now
             )
         }
     }
@@ -52,18 +46,59 @@ class Product private constructor(
     var status: ProductStatus = status
         private set
     
-    var stock: Int = stock
-        private set
-    
-    var lowStockThreshold: Int = lowStockThreshold
-        private set
-    
-    var stockStatus: StockStatus = calculateStockStatus(stock, lowStockThreshold)
-        private set
-    
     val options: List<ProductOption> get() = _options.toList()
     
+    // 상품의 재고 상태는 모든 옵션의 재고 상태를 기반으로 계산됩니다
+    val stockStatus: StockStatus
+        get() {
+            if (_options.isEmpty()) {
+                return StockStatus.OutOfStock
+            }
+            
+            return when {
+                _options.all { it.getStockStatus() == StockStatus.OutOfStock } -> StockStatus.OutOfStock
+                _options.any { it.getStockStatus() == StockStatus.LowStock } -> StockStatus.LowStock
+                else -> StockStatus.InStock
+            }
+        }
+    
+    fun isAvailable(): Boolean = status == ProductStatus.Active || status == ProductStatus.Suspended
+    
     fun isActive(): Boolean = status == ProductStatus.Active
+    
+    fun isDraft(): Boolean = status == ProductStatus.Draft
+    
+    /**
+     * 상품을 초안에서 활성화 상태로 변경합니다.
+     * 이 과정에서 상품 데이터의 유효성 검증을 수행합니다.
+     */
+    fun publishFromDraft(): Product {
+        if (status != ProductStatus.Draft) {
+            throw IllegalStateException("초안 상태의 상품만 발행할 수 있습니다. 현재 상태: $status")
+        }
+        
+        // 발행 전 유효성 검증
+        validateForPublication()
+        
+        this.status = ProductStatus.Active
+        this.updatedAt = LocalDateTime.now()
+        return this
+    }
+    
+    /**
+     * 발행 전 상품 데이터의 유효성을 검증합니다.
+     */
+    private fun validateForPublication() {
+        if (name.isBlank()) {
+            throw IllegalStateException("상품명은 필수 항목입니다.")
+        }
+        
+        if (_options.isEmpty()) {
+            throw IllegalStateException("상품에는 최소 하나의 옵션이 필요합니다.")
+        }
+        
+        // 추가 유효성 검사 가능
+    }
     
     /**
      * 상품을 활성화 상태로 변경합니다.
@@ -71,6 +106,10 @@ class Product private constructor(
     fun activate(): Product {
         if (status == ProductStatus.Discontinued) {
             throw IllegalStateException("판매 중단된 상품은 활성화할 수 없습니다.")
+        }
+        
+        if (status == ProductStatus.Draft) {
+            throw IllegalStateException("초안 상태의 상품은 publishFromDraft()를 통해 활성화해야 합니다.")
         }
         
         this.status = ProductStatus.Active
@@ -84,6 +123,10 @@ class Product private constructor(
     fun suspend(): Product {
         if (status == ProductStatus.Discontinued) {
             throw IllegalStateException("판매 중단된 상품은 일시 중지할 수 없습니다.")
+        }
+        
+        if (status == ProductStatus.Draft) {
+            throw IllegalStateException("초안 상태의 상품은 일시 중지할 수 없습니다.")
         }
         
         this.status = ProductStatus.Suspended
@@ -101,56 +144,39 @@ class Product private constructor(
     }
     
     /**
-     * 재고가 충분한지 확인합니다.
+     * 특정 옵션의 재고가 충분한지 확인합니다.
      */
-    fun hasEnoughStock(quantity: Int): Boolean {
-        return stock >= quantity
+    fun hasEnoughStock(optionId: OptionId, quantity: Int): Boolean {
+        val option = findOption(optionId)
+        return option.hasEnoughStock(quantity)
     }
     
     /**
-     * 재고를 차감합니다.
+     * 옵션의 재고를 차감합니다.
      */
-    fun decreaseStock(quantity: Int): Product {
-        if (!hasEnoughStock(quantity)) {
-            throw IllegalStateException("재고가 부족합니다. 현재 재고: $stock, 요청 수량: $quantity")
-        }
-        
-        this.stock -= quantity
+    fun decreaseStock(optionId: OptionId, quantity: Int): Product {
+        val option = findOption(optionId)
+        option.decreaseStock(quantity)
         this.updatedAt = LocalDateTime.now()
-        updateStockStatus()
         return this
     }
     
     /**
-     * 재고를 증가시킵니다.
+     * 옵션의 재고를 증가시킵니다.
      */
-    fun increaseStock(quantity: Int): Product {
-        if (quantity <= 0) {
-            throw IllegalArgumentException("증가시킬 재고 수량은 0보다 커야 합니다.")
-        }
-        
-        this.stock += quantity
+    fun increaseStock(optionId: OptionId, quantity: Int): Product {
+        val option = findOption(optionId)
+        option.increaseStock(quantity)
         this.updatedAt = LocalDateTime.now()
-        updateStockStatus()
         return this
     }
     
     /**
-     * 재고 상태를 갱신합니다.
+     * 특정 ID의 옵션을 찾습니다.
      */
-    private fun updateStockStatus() {
-        this.stockStatus = calculateStockStatus(this.stock, this.lowStockThreshold)
-    }
-    
-    /**
-     * 재고와 임계치를 기준으로 재고 상태를 계산합니다.
-     */
-    private fun calculateStockStatus(currentStock: Int, threshold: Int): StockStatus {
-        return when {
-            currentStock <= 0 -> StockStatus.OutOfStock
-            currentStock <= threshold -> StockStatus.LowStock
-            else -> StockStatus.InStock
-        }
+    private fun findOption(optionId: OptionId): ProductOption {
+        return _options.find { it.id == optionId }
+            ?: throw IllegalArgumentException("해당 ID의 옵션을 찾을 수 없습니다: ${optionId.value}")
     }
     
     /**

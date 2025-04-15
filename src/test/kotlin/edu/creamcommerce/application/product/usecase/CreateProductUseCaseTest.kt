@@ -111,11 +111,11 @@ class CreateProductUseCaseTest : BehaviorSpec({
             stock: Int,
             additionalPrice: Int
         ): ProductOption {
-            return ProductOption(
-                id = id,
+            return ProductOption.create(
                 name = name,
-                stock = stock,
-                additionalPrice = Money(additionalPrice)
+                sku = "TEST-SKU-${id.value}",
+                additionalPrice = Money(additionalPrice),
+                stock = stock
             )
         }
     }

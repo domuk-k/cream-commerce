@@ -45,7 +45,7 @@ class CancelOrderUseCase(
                 val product = productRepository.findById(orderItem.productId)
                     ?: throw IllegalStateException("상품을 찾을 수 없습니다: ${orderItem.productId.value}")
                 
-                product.increaseStock(orderItem.quantity)
+                product.increaseStock(orderItem.optionId, orderItem.quantity)
                 productRepository.save(product)
             }
             

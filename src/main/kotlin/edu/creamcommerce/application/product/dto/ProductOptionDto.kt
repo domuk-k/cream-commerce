@@ -1,18 +1,23 @@
 package edu.creamcommerce.application.product.dto
 
-import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.product.InventoryStatus
 import edu.creamcommerce.domain.product.ProductOption
+import java.math.BigDecimal
 
 data class ProductOptionDto(
     val id: String,
     val name: String,
-    val additionalPrice: Money,
-    val stock: Int
+    val additionalPrice: BigDecimal,
+    val stock: Int,
+    val stockStatus: InventoryStatus
 )
 
-fun ProductOption.toDto(): ProductOptionDto = ProductOptionDto(
-    id = this.id.value,
-    name = this.name,
-    additionalPrice = this.additionalPrice,
-    stock = this.stock
-)
+fun ProductOption.toDto(): ProductOptionDto {
+    return ProductOptionDto(
+        id = id.value,
+        name = name,
+        additionalPrice = additionalPrice.amount,
+        stock = inventory.quantity,
+        stockStatus = inventory.status
+    )
+}

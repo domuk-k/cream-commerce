@@ -16,11 +16,13 @@ data class CreateProductCommand(
 data class ProductOptionCommand(
     val name: String,
     val additionalPrice: BigDecimal?,
-    val stock: Int
+    val stock: Int,
+    val sku: String = "SKU-${java.util.UUID.randomUUID().toString().substring(0, 8)}"
 )
 
 fun ProductOptionCommand.toDomain(): ProductOption = ProductOption.create(
     name = this.name,
+    sku = this.sku,
     additionalPrice = Money(this.additionalPrice ?: BigDecimal.ZERO),
     stock = this.stock
 )
@@ -32,7 +34,8 @@ data class UpdateProductStatusCommand(
 data class AddProductOptionCommand(
     val name: String,
     val additionalPrice: java.math.BigDecimal,
-    val stock: Int
+    val stock: Int,
+    val sku: String
 )
 
 data class UpdateProductCommand(

@@ -10,6 +10,7 @@ import edu.creamcommerce.application.order.usecase.CreateOrderUseCase
 import edu.creamcommerce.application.order.usecase.FindOrdersUseCase
 import edu.creamcommerce.application.order.usecase.GetOrderByIdUseCase
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.product.OptionId
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.interfaces.web.order.CreateOrderRequest
 import edu.creamcommerce.interfaces.web.order.OrderController
@@ -55,6 +56,7 @@ class OrderControllerTest : ShouldSpec({
                 items = listOf(
                     OrderItemRequestDto(
                         productId = "prod-1",
+                        optionId = "option-1",
                         quantity = 2
                     )
                 ),
@@ -70,6 +72,8 @@ class OrderControllerTest : ShouldSpec({
                     OrderItemDto(
                         id = "item-1",
                         productId = ProductId("prod-1"),
+                        optionId = OptionId("option-1"),
+                        optionName = "테스트 옵션",
                         productName = "테스트 상품",
                         price = Money(BigDecimal.valueOf(10000)),
                         quantity = 2
@@ -179,7 +183,9 @@ class OrderControllerTest : ShouldSpec({
                     OrderItemDto(
                         id = "item-1",
                         productId = ProductId("prod-1"),
+                        optionId = OptionId("option-1"),
                         productName = "테스트 상품",
+                        optionName = "테스트 옵션",
                         price = Money(BigDecimal.valueOf(10000)),
                         quantity = 2
                     )

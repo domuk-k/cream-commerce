@@ -202,10 +202,12 @@ class ProcessPaymentUseCaseTest {
         val orderId = OrderId(UUID.randomUUID().toString())
         val userId = "test-user"
         val productId = ProductId(UUID.randomUUID().toString())
+        val optionId = edu.creamcommerce.domain.product.OptionId(UUID.randomUUID().toString())
         val orderAmount = Money(2000)
         
         val orderItem = mockk<OrderItem>()
         every { orderItem.productId } returns productId
+        every { orderItem.optionId } returns optionId
         every { orderItem.quantity } returns 2
         every { orderItem.productName } returns "테스트 상품"
         
@@ -225,6 +227,10 @@ class ProcessPaymentUseCaseTest {
         every { payment.id } returns PaymentId(UUID.randomUUID().toString())
         every { payment.amount } returns orderAmount
         
+        // Payment.create 정적 메서드 모킹
+        mockkStatic(Payment::class)
+        every { Payment.create(orderId = orderId, amount = orderAmount) } returns payment
+        
         val paymentSlot = slot<Payment>()
         every { paymentRepository.save(capture(paymentSlot)) } returns payment
         
@@ -236,9 +242,15 @@ class ProcessPaymentUseCaseTest {
         
         every { pointRepository.findByUserId(userId) } returns point
         
-        val product = mockk<Product>()
-        every { product.hasEnoughStock(any()) } returns false
+        // 재고 부족 상품 옵션 설정
+        val productOption = mockk<edu.creamcommerce.domain.product.ProductOption>()
+        every { productOption.id } returns optionId
+        every { productOption.name } returns "기본 옵션"
+        every { productOption.hasEnoughStock(2) } returns false
         
+        val product = mockk<Product>()
+        every { product.id } returns productId
+        every { product.options } returns listOf(productOption)
         every { productRepository.findById(productId) } returns product
         
         // when
@@ -247,7 +259,7 @@ class ProcessPaymentUseCaseTest {
         
         // then
         assertFalse(result.success)
-        assertEquals("상품 재고가 부족합니다: 테스트 상품", result.message)
+        assertEquals("상품 옵션 재고가 부족합니다: 테스트 상품 - 기본 옵션", result.message)
     }
     
     @Test
@@ -270,10 +282,12 @@ class ProcessPaymentUseCaseTest {
         val orderId = OrderId(UUID.randomUUID().toString())
         val userId = "test-user"
         val productId = ProductId(UUID.randomUUID().toString())
+        val optionId = edu.creamcommerce.domain.product.OptionId(UUID.randomUUID().toString())
         val orderAmount = Money(2000)
         
         val orderItem = mockk<OrderItem>()
         every { orderItem.productId } returns productId
+        every { orderItem.optionId } returns optionId
         every { orderItem.quantity } returns 2
         every { orderItem.productName } returns "테스트 상품"
         
@@ -313,9 +327,15 @@ class ProcessPaymentUseCaseTest {
         
         every { pointRepository.findByUserId(userId) } returns point
         
+        // 옵션에 충분한 재고 설정
+        val productOption = mockk<edu.creamcommerce.domain.product.ProductOption>()
+        every { productOption.id } returns optionId
+        every { productOption.hasEnoughStock(2) } returns true
+        every { productOption.decreaseStock(2) } returns productOption
+        
         val product = mockk<Product>()
-        every { product.hasEnoughStock(any()) } returns true
-        every { product.decreaseStock(any()) } returns product
+        every { product.id } returns productId
+        every { product.options } returns listOf(productOption)
         
         every { productRepository.findById(productId) } returns product
         every { productRepository.save(any()) } returns product
@@ -333,8 +353,8 @@ class ProcessPaymentUseCaseTest {
         verify { payment.process() }
         verify { payment.complete() }
         verify { point.use(orderAmount.amount) }
-        verify { product.hasEnoughStock(2) }
-        verify { product.decreaseStock(2) }
+        verify { productOption.hasEnoughStock(2) }
+        verify { productOption.decreaseStock(2) }
         verify { productRepository.save(product) }
     }
 } 

@@ -7,6 +7,7 @@ import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.order.OrderItem
 import edu.creamcommerce.domain.order.OrderRepository
+import edu.creamcommerce.domain.product.OptionId
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductRepository
 import org.springframework.stereotype.Component
@@ -22,16 +23,21 @@ class CreateOrderUseCase(
             val product = productRepository.findById(ProductId(item.productId))
                 ?: throw IllegalArgumentException("상품 ID가 유효하지 않습니다: ${item.productId}")
             
-            if (!product.isActive()) {
+            if (!product.isAvailable()) {
                 throw IllegalArgumentException("비활성화된 상품입니다: ${product.name}")
             }
+            val option = product.options.find { it.id == OptionId(item.optionId) }
+                ?: throw IllegalArgumentException("상품 옵션이 유효하지 않습니다: ${item.optionId}")
             
             // 주문 항목 생성
             OrderItem.create(
                 productId = product.id,
                 productName = product.name,
+                optionId = option.id,
+                optionName = option.name,
+                optionSku = option.sku,
                 price = Money(product.price.amount),
-                quantity = item.quantity
+                quantity = item.quantity,
             )
         }
         
