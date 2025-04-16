@@ -1,12 +1,13 @@
 package edu.creamcommerce.domain.point
 
+import edu.creamcommerce.domain.coupon.UserId
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 
 class Point private constructor(
     val id: PointId,
-    val userId: String,
+    val userId: UserId,
     amount: BigDecimal,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
@@ -14,7 +15,7 @@ class Point private constructor(
     companion object {
         fun create(
             id: PointId? = null,
-            userId: String,
+            userId: UserId,
             amount: BigDecimal = BigDecimal.ZERO
         ): Point {
             val now = LocalDateTime.now()

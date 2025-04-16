@@ -5,6 +5,7 @@ import edu.creamcommerce.application.point.dto.PointHistoryListDto
 import edu.creamcommerce.application.point.dto.command.ChargePointCommand
 import edu.creamcommerce.application.point.dto.command.UsePointCommand
 import edu.creamcommerce.application.point.usecase.*
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.point.PointId
 import org.springframework.stereotype.Component
 
@@ -16,7 +17,7 @@ class PointFacade(
     private val usePointUseCase: UsePointUseCase,
     private val getPointHistoriesUseCase: GetPointHistoriesUseCase
 ) {
-    fun getPointByUserId(userId: String): PointDto {
+    fun getPointByUserId(userId: UserId): PointDto {
         return getPointByUserIdUseCase(userId) ?: throw NoSuchElementException("포인트 정보를 찾을 수 없습니다.")
     }
     

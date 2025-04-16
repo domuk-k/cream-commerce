@@ -5,6 +5,7 @@ import edu.creamcommerce.application.point.dto.PointHistoryListDto
 import edu.creamcommerce.application.point.dto.command.ChargePointCommand
 import edu.creamcommerce.application.point.dto.command.UsePointCommand
 import edu.creamcommerce.application.point.facade.PointFacade
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.point.PointId
 import edu.creamcommerce.interfaces.web.ApiResponse
 import edu.creamcommerce.interfaces.web.toSuccessResponse
@@ -23,7 +24,7 @@ class PointController(
 ) {
     @GetMapping("/users/{userId}")
     @Operation(summary = "사용자 포인트 조회", description = "사용자 ID에 해당하는 포인트 정보를 반환합니다.")
-    fun getPointByUserId(@PathVariable userId: String): ResponseEntity<ApiResponse<PointDto>> {
+    fun getPointByUserId(@PathVariable userId: UserId): ResponseEntity<ApiResponse<PointDto>> {
         return pointFacade.getPointByUserId(userId).toSuccessResponse()
     }
     

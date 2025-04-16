@@ -7,8 +7,6 @@ import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.order.OrderItem
 import edu.creamcommerce.domain.order.OrderRepository
-import edu.creamcommerce.domain.product.OptionId
-import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductRepository
 import org.springframework.stereotype.Component
 
@@ -20,13 +18,13 @@ class CreateOrderUseCase(
     operator fun invoke(command: CreateOrderCommand): OrderDto {
         // 상품 유효성 확인
         val orderItems = command.items.map { item ->
-            val product = productRepository.findById(ProductId(item.productId))
+            val product = productRepository.findById(item.productId)
                 ?: throw IllegalArgumentException("상품 ID가 유효하지 않습니다: ${item.productId}")
             
             if (!product.isAvailable()) {
                 throw IllegalArgumentException("비활성화된 상품입니다: ${product.name}")
             }
-            val option = product.options.find { it.id == OptionId(item.optionId) }
+            val option = product.options.find { it.id == item.optionId }
                 ?: throw IllegalArgumentException("상품 옵션이 유효하지 않습니다: ${item.optionId}")
             
             // 주문 항목 생성

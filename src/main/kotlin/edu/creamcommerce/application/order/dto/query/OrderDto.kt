@@ -1,14 +1,17 @@
 package edu.creamcommerce.application.order.dto.query
 
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.order.Order
+import edu.creamcommerce.domain.order.OrderId
+import edu.creamcommerce.domain.order.OrderItemId
 import edu.creamcommerce.domain.product.OptionId
 import edu.creamcommerce.domain.product.ProductId
 import java.time.LocalDateTime
 
 data class OrderDto(
-    val id: String,
-    val userId: String,
+    val id: OrderId,
+    val userId: UserId,
     val status: String,
     val totalAmount: Money,
     val shippingAddress: String,
@@ -18,7 +21,7 @@ data class OrderDto(
 )
 
 data class OrderItemDto(
-    val id: String,
+    val id: OrderItemId,
     val productId: ProductId,
     val optionId: OptionId,
     val productName: String,
@@ -29,11 +32,11 @@ data class OrderItemDto(
 
 fun Order.toDomain(): OrderDto {
     return OrderDto(
-        id = this.id.value,
+        id = this.id,
         userId = this.userId,
         items = this.orderItems.map { item ->
             OrderItemDto(
-                id = item.id.value,
+                id = item.id,
                 productId = item.productId,
                 productName = item.productName,
                 optionId = item.optionId,

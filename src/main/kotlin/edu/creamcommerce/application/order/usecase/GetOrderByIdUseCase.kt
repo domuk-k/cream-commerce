@@ -14,16 +14,18 @@ class GetOrderByIdUseCase(
         val order = orderRepository.findById(OrderId(orderId)) ?: return null
         
         return OrderDto(
-            id = order.id.value,
+            id = order.id,
             userId = order.userId,
             status = order.status.name,
             totalAmount = order.totalAmount,
             shippingAddress = order.shippingAddress,
             items = order.orderItems.map { item ->
                 OrderItemDto(
-                    id = item.id.value,
+                    id = item.id,
                     productId = item.productId,
+                    optionId = item.optionId,
                     productName = item.productName,
+                    optionName = item.optionName,
                     price = item.price,
                     quantity = item.quantity
                 )

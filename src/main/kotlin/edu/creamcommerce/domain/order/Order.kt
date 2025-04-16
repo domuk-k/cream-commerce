@@ -1,12 +1,13 @@
 package edu.creamcommerce.domain.order
 
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
 import java.time.LocalDateTime
 import java.util.*
 
 class Order private constructor(
     val id: OrderId,
-    val userId: String,
+    val userId: UserId,
     var status: OrderStatus,
     val totalAmount: Money,
     private val _orderItems: MutableList<OrderItem>,
@@ -17,7 +18,7 @@ class Order private constructor(
     companion object {
         fun create(
             id: OrderId? = null,
-            userId: String,
+            userId: UserId,
             orderItems: List<OrderItem>,
             shippingAddress: String
         ): Order {
