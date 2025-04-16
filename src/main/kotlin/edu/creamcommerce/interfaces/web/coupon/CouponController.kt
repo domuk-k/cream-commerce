@@ -1,115 +1,139 @@
 package edu.creamcommerce.interfaces.web.coupon
 
-//
-//@RestController
-//@RequestMapping("/api/coupons")
-//@Tag(name = "쿠폰 API", description = "선착순 쿠폰 발급 및 조회 API")
-//class CouponController {
-//    private val userCoupons = ConcurrentHashMap<Long, MutableList<UserCouponDto>>()
-//
-//    @GetMapping("/available")
-//    @Operation(summary = "발급 가능한 쿠폰 목록 조회", description = "현재 발급 가능한 쿠폰 목록을 조회합니다.")
-//    fun getAvailableCoupons(): ResponseEntity<AvailableCouponsResponse> {
-//        val availableCoupons = mockCoupons.filter {
-//            it.isActive &&
-//                    it.startDate.isBefore(LocalDateTime.now()) &&
-//                    it.endDate.isAfter(LocalDateTime.now()) &&
-//                    (couponQuantities[it.id]?.get() ?: 0) > 0
-//        }
-//
-//        return ResponseEntity.ok(
-//            AvailableCouponsResponse(
-//                coupons = availableCoupons,
-//                totalCount = availableCoupons.size
-//            )
-//        )
-//    }
-//
-//    @PostMapping("/{id}/claim")
-//    @Operation(summary = "선착순 쿠폰 발급 요청", description = "선착순 쿠폰 발급을 요청합니다.")
-//    fun claimCoupon(@PathVariable id: Long): ResponseEntity<ClaimCouponResponse> {
-//        val userId = 1L // 보통은 인증된 사용자 ID
-//        val coupon = mockCoupons.find { it.id == id }
-//
-//        if (coupon == null) {
-//            return ResponseEntity.ok(
-//                ClaimCouponResponse(
-//                    success = false,
-//                    message = "존재하지 않는 쿠폰입니다."
-//                )
-//            )
-//        }
-//
-//        // 이미 발급받은 쿠폰인지 확인
-//        val userCouponList = userCoupons.getOrPut(userId) { mutableListOf() }
-//        if (userCouponList.any { it.couponId == id }) {
-//            return ResponseEntity.ok(
-//                ClaimCouponResponse(
-//                    success = false,
-//                    message = "이미 발급받은 쿠폰입니다."
-//                )
-//            )
-//        }
-//
-//        // 쿠폰 유효성 확인
-//        if (!coupon.isActive) {
-//            return ResponseEntity.ok(
-//                ClaimCouponResponse(
-//                    success = false,
-//                    message = "비활성화된 쿠폰입니다."
-//                )
-//            )
-//        }
-//
-//        val now = LocalDateTime.now()
-//        if (now.isBefore(coupon.startDate) || now.isAfter(coupon.endDate)) {
-//            return ResponseEntity.ok(
-//                ClaimCouponResponse(
-//                    success = false,
-//                    message = "쿠폰 발급 기간이 아닙니다."
-//                )
-//            )
-//        }
-//
-//        // 남은 수량 확인 및 감소 (원자적 연산)
-//        val remainingQuantity = couponQuantities[id] ?: AtomicLong(0)
-//        val newQuantity = remainingQuantity.decrementAndGet()
-//
-//        if (newQuantity < 0) {
-//            // 수량이 부족하면 다시 증가시키고 실패 응답
-//            remainingQuantity.incrementAndGet()
-//            return ResponseEntity.ok(
-//                ClaimCouponResponse(
-//                    success = false,
-//                    message = "쿠폰이 모두 소진되었습니다."
-//                )
-//            )
-//        }
-//
-//        // 쿠폰 발급 처리
-//        val userCouponDto = UserCouponDto(
-//            id = (userCouponList.maxOfOrNull { it.id ?: 0L } ?: 0L) + 1,
-//            userId = userId,
-//            couponId = id,
-//            couponInfo = coupon.copy(remainingQuantity = newQuantity.toInt())
-//        )
-//
-//        userCouponList.add(userCouponDto)
-//        userCoupons[userId] = userCouponList
-//
-//        return ResponseEntity.ok(
-//            ClaimCouponResponse(
-//                success = true,
-//                message = "쿠폰이 성공적으로 발급되었습니다.",
-//                coupon = userCouponDto
-//            )
-//        )
-//    }
-//
-//    @GetMapping("/my-coupons")
-//    @Operation(summary = "내 쿠폰 목록 조회", description = "사용자가 보유한 쿠폰 목록을 조회합니다.")
-//    fun getMyCoupons(): ResponseEntity<List<UserCouponDto>> {
-//        val userId = 1L // 보통은 인증된 사용자 ID
-//        return ResponseEntity.ok(userCoupons[userId] ?: emptyList())
-//    }
-//}
+import edu.creamcommerce.application.coupon.dto.command.*
+import edu.creamcommerce.application.coupon.dto.query.*
+import edu.creamcommerce.application.coupon.facade.CouponFacade
+import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.CouponTemplateId
+import edu.creamcommerce.domain.coupon.UserCouponId
+import edu.creamcommerce.domain.coupon.UserId
+import edu.creamcommerce.interfaces.web.ApiResponse
+import edu.creamcommerce.interfaces.web.toSuccessResponse
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@RestController
+@RequestMapping("/api/coupons")
+@Tag(name = "쿠폰 관리 API", description = "쿠폰 템플릿 생성, 상태 변경, 쿠폰 발급, 사용 API")
+class CouponController(
+    private val couponFacade: CouponFacade
+) {
+    // 쿠폰 템플릿 관련 API
+    @PostMapping("/templates")
+    @Operation(summary = "쿠폰 템플릿 생성", description = "새로운 쿠폰 템플릿을 생성합니다.")
+    fun createCouponTemplate(@RequestBody request: CreateCouponTemplateRequest): ResponseEntity<ApiResponse<CouponTemplateDto>> {
+        val command = CreateCouponTemplateCommand(
+            name = request.name,
+            description = request.description,
+            discountType = request.discountType,
+            discountValue = request.discountValue,
+            minimumOrderAmount = Money(request.minimumOrderAmount),
+            maximumDiscountAmount = request.maximumDiscountAmount?.let { Money(it) },
+            maxIssuanceCount = request.maxIssuanceCount,
+            maxIssuancePerUser = request.maxIssuancePerUser,
+            validDurationHours = request.validDurationHours,
+            startAt = request.startAt,
+            endAt = request.endAt
+        )
+        
+        val result = couponFacade.createCouponTemplate(command)
+        return result.toSuccessResponse()
+    }
+    
+    @GetMapping("/templates/active")
+    @Operation(summary = "활성 쿠폰 템플릿 조회", description = "현재 활성 상태인 쿠폰 템플릿 목록을 조회합니다.")
+    fun getActiveCouponTemplates(): ResponseEntity<ApiResponse<List<CouponTemplateDto>>> {
+        val templates = couponFacade.getActiveCouponTemplates()
+        return templates.toSuccessResponse()
+    }
+    
+    @PutMapping("/templates/{templateId}/suspend")
+    @Operation(summary = "쿠폰 템플릿 일시 중지", description = "쿠폰 템플릿을 일시 중지 상태로 변경합니다.")
+    fun suspendCouponTemplate(@PathVariable templateId: String): ResponseEntity<ApiResponse<CouponTemplateStatusDto>> {
+        val command = ChangeCouponTemplateStatusCommand(CouponTemplateId(templateId))
+        val result = couponFacade.suspendCouponTemplate(command)
+        return result.toSuccessResponse()
+    }
+    
+    @PutMapping("/templates/{templateId}/resume")
+    @Operation(summary = "쿠폰 템플릿 재개", description = "쿠폰 템플릿을 활성 상태로 변경합니다.")
+    fun resumeCouponTemplate(@PathVariable templateId: String): ResponseEntity<ApiResponse<CouponTemplateStatusDto>> {
+        val command = ChangeCouponTemplateStatusCommand(CouponTemplateId(templateId))
+        val result = couponFacade.resumeCouponTemplate(command)
+        return result.toSuccessResponse()
+    }
+    
+    @PutMapping("/templates/{templateId}/terminate")
+    @Operation(summary = "쿠폰 템플릿 종료", description = "쿠폰 템플릿을 종료 상태로 변경합니다.")
+    fun terminateCouponTemplate(@PathVariable templateId: String): ResponseEntity<ApiResponse<CouponTemplateStatusDto>> {
+        val command = ChangeCouponTemplateStatusCommand(CouponTemplateId(templateId))
+        val result = couponFacade.terminateCouponTemplate(command)
+        return result.toSuccessResponse()
+    }
+    
+    // 쿠폰 발급 관련 API
+    @PostMapping("/issue")
+    @Operation(summary = "쿠폰 발급", description = "사용자에게 쿠폰을 발급합니다.")
+    fun issueCoupon(@RequestBody request: IssueCouponRequest): ResponseEntity<ApiResponse<UserCouponDto>> {
+        val command = IssueCouponCommand(
+            userId = UserId(request.userId),
+            templateId = CouponTemplateId(request.templateId)
+        )
+        
+        val result = couponFacade.issueCoupon(command)
+            ?: return ResponseEntity.badRequest().body(ApiResponse.error("쿠폰 발급에 실패했습니다."))
+        
+        return result.toSuccessResponse()
+    }
+    
+    @GetMapping("/users/{userId}")
+    @Operation(summary = "사용자의 모든 쿠폰 조회", description = "사용자가 소유한 모든 쿠폰을 조회합니다.")
+    fun getUserCoupons(@PathVariable userId: String): ResponseEntity<ApiResponse<List<UserCouponDto>>> {
+        val coupons = couponFacade.getUserCoupons(UserId(userId))
+        return coupons.toSuccessResponse()
+    }
+    
+    @GetMapping("/users/{userId}/valid")
+    @Operation(summary = "사용자의 유효 쿠폰 조회", description = "사용자가 소유한 유효한 쿠폰을 조회합니다.")
+    fun getValidUserCoupons(@PathVariable userId: String): ResponseEntity<ApiResponse<List<UserCouponDto>>> {
+        val coupons = couponFacade.getValidUserCoupons(UserId(userId))
+        return coupons.toSuccessResponse()
+    }
+    
+    // 쿠폰 사용 관련 API
+    @PostMapping("/use")
+    @Operation(summary = "쿠폰 사용", description = "주문 시 쿠폰을 사용합니다.")
+    fun useCoupon(@RequestBody request: UseCouponRequest): ResponseEntity<ApiResponse<CouponUsageResultDto>> {
+        val command = UseCouponCommand(
+            userId = UserId(request.userId),
+            couponId = UserCouponId(request.couponId),
+            orderAmount = Money(request.orderAmount)
+        )
+        
+        val result = couponFacade.useCoupon(command)
+            ?: return ResponseEntity.badRequest().body(ApiResponse.error("쿠폰 사용에 실패했습니다."))
+        
+        return result.toSuccessResponse()
+    }
+    
+    @PostMapping("/{couponId}/revoke")
+    @Operation(summary = "쿠폰 회수", description = "발급된 쿠폰을 회수합니다.")
+    fun revokeCoupon(@PathVariable couponId: String): ResponseEntity<ApiResponse<CouponRevokeResultDto>> {
+        val command = RevokeCouponCommand(UserCouponId(couponId))
+        
+        val result = couponFacade.revokeCoupon(command)
+            ?: return ResponseEntity.badRequest().body(ApiResponse.error("쿠폰 회수에 실패했습니다."))
+        
+        return result.toSuccessResponse()
+    }
+    
+    // 배치 작업 관련 API (관리자용)
+    @PostMapping("/batch/expire")
+    @Operation(summary = "만료 쿠폰 처리", description = "만료된 쿠폰을 자동으로 처리합니다. (관리자용)")
+    fun expireOutdatedCoupons(): ResponseEntity<ApiResponse<ExpireCouponsResultDto>> {
+        val result = couponFacade.expireOutdatedCoupons()
+        return result.toSuccessResponse()
+    }
+}
