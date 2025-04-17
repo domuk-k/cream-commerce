@@ -10,6 +10,9 @@ import edu.creamcommerce.application.order.usecase.CreateOrderUseCase
 import edu.creamcommerce.application.order.usecase.FindOrdersUseCase
 import edu.creamcommerce.application.order.usecase.GetOrderByIdUseCase
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
+import edu.creamcommerce.domain.order.OrderId
+import edu.creamcommerce.domain.order.OrderItemId
 import edu.creamcommerce.domain.product.OptionId
 import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.interfaces.web.order.CreateOrderRequest
@@ -52,11 +55,11 @@ class OrderControllerTest : ShouldSpec({
         should("POST /api/orders 요청 시 주문을 생성하고 생성된 주문 정보를 반환한다") {
             // given
             val request = CreateOrderRequest(
-                userId = "test-user",
+                userId = UserId("test-user"),
                 items = listOf(
                     OrderItemRequestDto(
-                        productId = "prod-1",
-                        optionId = "option-1",
+                        productId = ProductId("prod-1"),
+                        optionId = OptionId("option-1"),
                         quantity = 2
                     )
                 ),
@@ -64,13 +67,13 @@ class OrderControllerTest : ShouldSpec({
             )
             
             val result = OrderDto(
-                id = "order-1",
-                userId = "test-user",
+                id = OrderId("order-1"),
+                userId = UserId("test-user"),
                 status = "PAID",
                 shippingAddress = "서울시 강남구 테스트로 123",
                 items = listOf(
                     OrderItemDto(
-                        id = "item-1",
+                        id = OrderItemId("item-1"),
                         productId = ProductId("prod-1"),
                         optionId = OptionId("option-1"),
                         optionName = "테스트 옵션",
@@ -174,14 +177,14 @@ class OrderControllerTest : ShouldSpec({
             status: String = "PAID"
         ): OrderDto {
             return OrderDto(
-                id = id,
-                userId = userId,
+                id = OrderId(id),
+                userId = UserId(userId),
                 status = status,
                 totalAmount = Money(BigDecimal.valueOf(20000)),
                 shippingAddress = "서울시 강남구 테스트로 123",
                 items = listOf(
                     OrderItemDto(
-                        id = "item-1",
+                        id = OrderItemId("item-1"),
                         productId = ProductId("prod-1"),
                         optionId = OptionId("option-1"),
                         productName = "테스트 상품",

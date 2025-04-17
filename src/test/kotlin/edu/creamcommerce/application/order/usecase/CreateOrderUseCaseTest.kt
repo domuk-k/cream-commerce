@@ -3,6 +3,7 @@ package edu.creamcommerce.application.order.usecase
 import edu.creamcommerce.application.order.dto.command.CreateOrderCommand
 import edu.creamcommerce.application.order.dto.command.OrderItemCommand
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.order.Order
 import edu.creamcommerce.domain.order.OrderRepository
 import edu.creamcommerce.domain.product.OptionId
@@ -42,12 +43,13 @@ class CreateOrderUseCaseTest : BehaviorSpec({
         }
         
         `when`("주문 생성 요청을 하면") {
+            val userId = UserId("test-user")
             val command = CreateOrderCommand(
-                userId = "test-user",
+                userId = userId,
                 items = listOf(
                     OrderItemCommand(
-                        productId = productId.value,
-                        optionId = optionId.value,
+                        productId = productId,
+                        optionId = optionId,
                         quantity = 2
                     )
                 ),
@@ -60,7 +62,7 @@ class CreateOrderUseCaseTest : BehaviorSpec({
                 verify { orderRepository.save(any()) }
                 
                 val savedOrder = orderSlot.captured
-                savedOrder.userId shouldBe "test-user"
+                savedOrder.userId shouldBe userId
                 savedOrder.status.name shouldBe "PENDING"
                 savedOrder.totalAmount.amount shouldBe BigDecimal.valueOf(2000)
                 savedOrder.orderItems.size shouldBe 1
@@ -78,12 +80,13 @@ class CreateOrderUseCaseTest : BehaviorSpec({
         every { productRepository.findById(nonExistentProductId) } returns null
         
         `when`("주문 생성 요청을 하면") {
+            val userId = UserId("test-user")
             val command = CreateOrderCommand(
-                userId = "test-user",
+                userId = userId,
                 items = listOf(
                     OrderItemCommand(
-                        productId = nonExistentProductId.value,
-                        optionId = OptionId.create().value,
+                        productId = nonExistentProductId,
+                        optionId = OptionId.create(),
                         quantity = 2
                     )
                 ),
@@ -110,12 +113,13 @@ class CreateOrderUseCaseTest : BehaviorSpec({
         every { productRepository.findById(inactiveProductId) } returns inactiveProduct
         
         `when`("주문 생성 요청을 하면") {
+            val userId = UserId("test-user")
             val command = CreateOrderCommand(
-                userId = "test-user",
+                userId = userId,
                 items = listOf(
                     OrderItemCommand(
-                        productId = inactiveProductId.value,
-                        optionId = OptionId.create().value,
+                        productId = inactiveProductId,
+                        optionId = OptionId.create(),
                         quantity = 2
                     )
                 ),

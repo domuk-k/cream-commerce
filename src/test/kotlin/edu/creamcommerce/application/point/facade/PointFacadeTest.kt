@@ -6,6 +6,8 @@ import edu.creamcommerce.application.point.dto.PointHistoryListDto
 import edu.creamcommerce.application.point.dto.command.ChargePointCommand
 import edu.creamcommerce.application.point.dto.command.UsePointCommand
 import edu.creamcommerce.application.point.usecase.*
+import edu.creamcommerce.domain.coupon.UserId
+import edu.creamcommerce.domain.point.PointHistoryId
 import edu.creamcommerce.domain.point.PointHistoryType
 import edu.creamcommerce.domain.point.PointId
 import io.kotest.assertions.throwables.shouldThrow
@@ -32,22 +34,22 @@ class PointFacadeTest : BehaviorSpec({
         getPointHistoriesUseCase = getPointHistoriesUseCase
     )
     given("사용자 ID가 주어졌을 때") {
-        val userId = "test-user-id"
-        val pointDto = createTestPointDto("point-id", userId)
+        val userId = UserId("test-user-id")
+        val pointDto = createTestPointDto(PointId("point-id"), userId)
         
         `when`("해당 사용자의 포인트가 존재하는 경우") {
-            every { getPointByUserIdUseCase(userId) } returns pointDto
+            every { getPointByUserIdUseCase.invoke(userId) } returns pointDto
             
             then("포인트 정보를 반환한다") {
                 val result = pointFacade.getPointByUserId(userId)
                 
                 result shouldBe pointDto
-                verify { getPointByUserIdUseCase(userId) }
+                verify { getPointByUserIdUseCase.invoke(userId) }
             }
         }
         
         `when`("해당 사용자의 포인트가 존재하지 않는 경우") {
-            every { getPointByUserIdUseCase(userId) } returns null
+            every { getPointByUserIdUseCase.invoke(userId) } returns null
             
             then("NoSuchElementException 예외가 발생한다") {
                 val exception = shouldThrow<NoSuchElementException> {
@@ -55,19 +57,19 @@ class PointFacadeTest : BehaviorSpec({
                 }
                 
                 exception.message shouldBe "포인트 정보를 찾을 수 없습니다."
-                verify { getPointByUserIdUseCase(userId) }
+                verify { getPointByUserIdUseCase.invoke(userId) }
             }
         }
     }
     
     given("포인트 충전 명령이 주어졌을 때") {
         val command = ChargePointCommand(
-            userId = "test-user-id",
+            userId = UserId("test-user-id"),
             amount = BigDecimal.valueOf(1000)
         )
         
         val chargedPointDto = createTestPointDto(
-            id = "point-id",
+            id = PointId("point-id"),
             userId = command.userId,
             amount = command.amount
         )
@@ -89,13 +91,13 @@ class PointFacadeTest : BehaviorSpec({
     
     given("포인트 사용 명령이 주어졌을 때") {
         val command = UsePointCommand(
-            userId = "test-user-id",
+            userId = UserId("test-user-id"),
             amount = BigDecimal.valueOf(500)
         )
         
         val remainingAmount = BigDecimal.valueOf(500) // 1000 - 500
         val usedPointDto = createTestPointDto(
-            id = "point-id",
+            id = PointId("point-id"),
             userId = command.userId,
             amount = remainingAmount
         )
@@ -117,17 +119,17 @@ class PointFacadeTest : BehaviorSpec({
     
     given("포인트 이력 조회 요청이 주어졌을 때") {
         val pointId = PointId("test-point-id")
-        val pointDto = createTestPointDto(pointId.value)
+        val pointDto = createTestPointDto(pointId)
         val historyListDto = PointHistoryListDto(
             histories = listOf(
                 createTestPointHistoryDto(
-                    id = "history-1",
-                    pointId = pointId.value,
+                    id = PointHistoryId("history-1"),
+                    pointId = pointId,
                     type = PointHistoryType.CHARGE
                 ),
                 createTestPointHistoryDto(
-                    id = "history-2",
-                    pointId = pointId.value,
+                    id = PointHistoryId("history-2"),
+                    pointId = pointId,
                     type = PointHistoryType.USE
                 )
             ),
@@ -168,8 +170,8 @@ class PointFacadeTest : BehaviorSpec({
 }) {
     companion object {
         fun createTestPointDto(
-            id: String,
-            userId: String = "test-user",
+            id: PointId = PointId("test-user"),
+            userId: UserId = UserId("test-user"),
             amount: BigDecimal = BigDecimal.valueOf(1000)
         ): PointDto {
             return PointDto(
@@ -182,8 +184,8 @@ class PointFacadeTest : BehaviorSpec({
         }
         
         fun createTestPointHistoryDto(
-            id: String,
-            pointId: String,
+            id: PointHistoryId = PointHistoryId("test-history"),
+            pointId: PointId = PointId("test-user"),
             type: PointHistoryType,
             amount: BigDecimal = BigDecimal.valueOf(1000),
             balance: BigDecimal = BigDecimal.valueOf(1000)

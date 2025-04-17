@@ -2,6 +2,7 @@ package edu.creamcommerce.application.payment.usecase
 
 import edu.creamcommerce.application.payment.dto.command.ProcessPaymentCommand
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.order.*
 import edu.creamcommerce.domain.payment.*
 import edu.creamcommerce.domain.point.Point
@@ -138,7 +139,7 @@ class ProcessPaymentUseCaseTest {
         )
         
         val orderId = OrderId(UUID.randomUUID().toString())
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val orderAmount = Money(5000)
         
         val orderItem = mockk<OrderItem>()
@@ -200,7 +201,7 @@ class ProcessPaymentUseCaseTest {
         )
         
         val orderId = OrderId(UUID.randomUUID().toString())
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val productId = ProductId(UUID.randomUUID().toString())
         val optionId = edu.creamcommerce.domain.product.OptionId(UUID.randomUUID().toString())
         val orderAmount = Money(2000)
@@ -280,7 +281,7 @@ class ProcessPaymentUseCaseTest {
         )
         
         val orderId = OrderId(UUID.randomUUID().toString())
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val productId = ProductId(UUID.randomUUID().toString())
         val optionId = edu.creamcommerce.domain.product.OptionId(UUID.randomUUID().toString())
         val orderAmount = Money(2000)

@@ -1,23 +1,28 @@
 package edu.creamcommerce.domain.order
 
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
+import edu.creamcommerce.domain.product.OptionId
 import edu.creamcommerce.domain.product.ProductId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import java.math.BigDecimal
-import java.util.*
 
 class OrderTest : BehaviorSpec({
     given("주문이 생성되었을 때") {
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val orderItems = listOf(
             OrderItem.create(
-                productId = ProductId(UUID.randomUUID().toString()),
-                productName = "테스트 상품",
+                productId = ProductId.create(),
+                optionId = OptionId.create(),
+                optionName = "optionName",
+                optionSku = "optionSku",
+                productName = "productName",
                 price = Money(1000),
-                quantity = 2
-            )
+                quantity = 2,
+                
+                )
         )
         val shippingAddress = "서울시 강남구 테스트로 123"
         val order = Order.create(
