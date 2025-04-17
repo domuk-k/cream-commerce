@@ -111,7 +111,7 @@ class Product private constructor(
         }
         
         if (status == ProductStatus.Draft) {
-            throw IllegalStateException("초안 상태의 상품은 publishFromDraft()를 통해 활성화해야 합니다.")
+            return publishFromDraft()
         }
         
         this.status = ProductStatus.Active
@@ -177,7 +177,7 @@ class Product private constructor(
      * 특정 ID의 옵션을 찾습니다.
      */
     private fun findOption(optionId: OptionId): ProductOption {
-        return _options.find { it.id == optionId }
+        return _options.find { it.id.value == optionId.value }
             ?: throw IllegalArgumentException("해당 ID의 옵션을 찾을 수 없습니다: ${optionId.value}")
     }
     
@@ -202,8 +202,11 @@ class Product private constructor(
             throw IllegalStateException("활성 또는 초안 상태의 상품만 옵션을 제거할 수 있습니다.")
         }
         
-        val optionToRemove = _options.find { it.id == optionId }
-            ?: throw IllegalArgumentException("해당 ID의 옵션을 찾을 수 없습니다: ${optionId.value}")
+        val optionToRemove = _options.find { it.id.value == optionId.value }
+        if (optionToRemove == null) {
+            // 옵션이 이미 없는 경우 아무것도 하지 않고 현재 상품 반환
+            return this
+        }
         
         _options.remove(optionToRemove)
         this.updatedAt = LocalDateTime.now()

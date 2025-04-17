@@ -7,6 +7,7 @@ import java.math.BigDecimal
 data class ProductOptionDto(
     val id: String,
     val name: String,
+    val productId: String,
     val additionalPrice: BigDecimal,
     val stock: Int,
     val stockStatus: InventoryStatus
@@ -15,6 +16,7 @@ data class ProductOptionDto(
 fun ProductOption.toDto(): ProductOptionDto {
     return ProductOptionDto(
         id = id.value,
+        productId = productId.value,
         name = name,
         additionalPrice = additionalPrice.amount,
         stock = inventory.quantity,

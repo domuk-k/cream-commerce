@@ -35,7 +35,7 @@ data class UpdateProductStatusCommand(
 
 data class AddProductOptionCommand(
     val name: String,
-    val additionalPrice: java.math.BigDecimal,
+    val additionalPrice: BigDecimal,
     val stock: Int,
     val sku: String
 )
@@ -43,5 +43,5 @@ data class AddProductOptionCommand(
 data class UpdateProductCommand(
     val name: String? = null,
     val description: String? = null,
-    val price: java.math.BigDecimal? = null
+    val price: BigDecimal? = null
 )

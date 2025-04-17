@@ -2,6 +2,7 @@ package edu.creamcommerce.application.product.facade
 
 import edu.creamcommerce.application.product.dto.ProductDto
 import edu.creamcommerce.application.product.dto.ProductListDto
+import edu.creamcommerce.application.product.dto.ProductOptionDto
 import edu.creamcommerce.application.product.dto.command.AddProductOptionCommand
 import edu.creamcommerce.application.product.dto.command.CreateProductCommand
 import edu.creamcommerce.application.product.dto.command.UpdateProductCommand
@@ -40,7 +41,7 @@ class ProductFacade(
         return updateProductStatusUseCase(id, command)
     }
     
-    fun addProductOption(id: ProductId, command: AddProductOptionCommand): ProductDto {
+    fun addProductOption(id: ProductId, command: AddProductOptionCommand): ProductOptionDto {
         return addProductOptionUseCase(id, command)
     }
     
