@@ -12,6 +12,6 @@ interface CouponRepository {
     fun findUserCouponById(id: UserCouponId): UserCoupon?
     fun findUserCouponsByUserId(userId: UserId): List<UserCoupon>
     fun findValidUserCouponsByUserId(userId: UserId): List<UserCoupon>
-    fun findUserCouponCount(userId: UserId, templateId: CouponTemplateId): Int
+    fun findUserCouponCount(userId: UserId, templateId: CouponTemplateId): Long
     fun findExpiredUserCoupons(): List<UserCoupon>
 } 

@@ -26,7 +26,8 @@ class OrderItem private constructor(
             optionName: String,
             optionSku: String,
             price: Money,
-            quantity: Int
+            quantity: Int,
+            createdAt: LocalDateTime? = null
         ): OrderItem {
             if (quantity <= 0) {
                 throw IllegalArgumentException("주문 수량은 0보다 커야 합니다.")
@@ -41,7 +42,7 @@ class OrderItem private constructor(
                 optionSku = optionSku,
                 price = price,
                 quantity = quantity,
-                createdAt = LocalDateTime.now()
+                createdAt = createdAt ?: LocalDateTime.now()
             )
         }
     }

@@ -10,9 +10,9 @@ class UseCouponUseCase(
     private val couponRepository: CouponRepository
 ) {
     operator fun invoke(command: UseCouponCommand): CouponUsageResultDto? {
-        val coupon = couponRepository.findUserCouponById(command.couponId) 
+        val coupon = couponRepository.findUserCouponById(command.couponId)
             ?: return null
-            
+        
         // 쿠폰 소유자 확인
         if (coupon.userId != command.userId) {
             return null
@@ -32,7 +32,7 @@ class UseCouponUseCase(
         val discountAmount = coupon.calculateDiscount(command.orderAmount)
         
         // 쿠폰 사용 처리
-        if (!coupon.use()) {
+        if (!coupon.use(command.orderId)) {
             return null
         }
         

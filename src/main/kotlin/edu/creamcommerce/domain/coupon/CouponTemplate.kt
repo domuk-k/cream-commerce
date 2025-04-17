@@ -79,6 +79,7 @@ class CouponTemplate private constructor(
     
     companion object {
         fun create(
+            id: CouponTemplateId = CouponTemplateId.create(),
             name: String,
             description: String,
             discountType: DiscountType,
@@ -105,7 +106,7 @@ class CouponTemplate private constructor(
             }
             
             return CouponTemplate(
-                id = CouponTemplateId.create(),
+                id = id,
                 name = name,
                 description = description,
                 discountType = discountType,

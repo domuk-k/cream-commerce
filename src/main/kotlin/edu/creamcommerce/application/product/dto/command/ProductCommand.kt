@@ -1,6 +1,7 @@
 package edu.creamcommerce.application.product.dto.command
 
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductOption
 import edu.creamcommerce.domain.product.ProductStatus
 import java.math.BigDecimal
@@ -20,11 +21,12 @@ data class ProductOptionCommand(
     val sku: String = "SKU-${java.util.UUID.randomUUID().toString().substring(0, 8)}"
 )
 
-fun ProductOptionCommand.toDomain(): ProductOption = ProductOption.create(
+fun ProductOptionCommand.toDomain(productId: ProductId): ProductOption = ProductOption.create(
     name = this.name,
     sku = this.sku,
     additionalPrice = Money(this.additionalPrice ?: BigDecimal.ZERO),
-    stock = this.stock
+    stock = this.stock,
+    productId = productId
 )
 
 data class UpdateProductStatusCommand(

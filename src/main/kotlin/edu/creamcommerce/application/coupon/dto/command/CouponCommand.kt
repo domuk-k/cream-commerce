@@ -1,10 +1,7 @@
 package edu.creamcommerce.application.coupon.dto.command
 
 import edu.creamcommerce.domain.common.Money
-import edu.creamcommerce.domain.coupon.CouponTemplateId
-import edu.creamcommerce.domain.coupon.DiscountType
-import edu.creamcommerce.domain.coupon.UserCouponId
-import edu.creamcommerce.domain.coupon.UserId
+import edu.creamcommerce.domain.coupon.*
 import java.time.LocalDateTime
 
 data class CreateCouponTemplateCommand(
@@ -33,7 +30,8 @@ data class IssueCouponCommand(
 data class UseCouponCommand(
     val userId: UserId,
     val couponId: UserCouponId,
-    val orderAmount: Money
+    val orderAmount: Money,
+    val orderId: CouponOrderId
 )
 
 data class RevokeCouponCommand(

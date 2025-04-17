@@ -11,7 +11,7 @@ class Order private constructor(
     var status: OrderStatus,
     val totalAmount: Money,
     private val _orderItems: MutableList<OrderItem>,
-    val shippingAddress: String,
+    val shippingAddress: String? = "",
     val createdAt: LocalDateTime,
     var updatedAt: LocalDateTime
 ) {
@@ -20,7 +20,7 @@ class Order private constructor(
             id: OrderId? = null,
             userId: UserId,
             orderItems: List<OrderItem>,
-            shippingAddress: String
+            shippingAddress: String? = "",
         ): Order {
             val now = LocalDateTime.now()
             val totalAmount = orderItems.fold(Money.ZERO) { acc, item -> acc + item.price * item.quantity }

@@ -18,6 +18,7 @@ class Product private constructor(
         fun create(
             id: ProductId? = null,
             name: String,
+            description: String = "",
             price: Money,
             options: List<ProductOption> = emptyList()
         ): Product {
@@ -26,6 +27,7 @@ class Product private constructor(
                 id = id ?: ProductId.create(),
                 name = name,
                 price = price,
+                description = description,
                 status = ProductStatus.Draft,
                 _options = options.toMutableList(),
                 createdAt = now,

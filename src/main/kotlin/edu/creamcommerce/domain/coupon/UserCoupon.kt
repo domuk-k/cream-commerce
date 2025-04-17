@@ -14,24 +14,35 @@ class UserCoupon private constructor(
     val minimumOrderAmount: Money,
     val maximumDiscountAmount: Money?,
     val validUntil: LocalDateTime,
-    status: UserCouponStatus = UserCouponStatus.VALID
+    val issuedAt: LocalDateTime = LocalDateTime.now(),
+    status: UserCouponStatus = UserCouponStatus.VALID,
+    orderId: CouponOrderId? = null,
+    usedAt: LocalDateTime? = null
 ) {
     var status: UserCouponStatus = status
+        private set
+    
+    var orderId: CouponOrderId? = orderId
+        private set
+    
+    var usedAt: LocalDateTime? = usedAt
         private set
     
     // 쿠폰 사용 가능 여부 확인
     fun isUsable(): Boolean {
         val now = LocalDateTime.now()
-        return status == UserCouponStatus.VALID && now.isBefore(validUntil)
+        return status == UserCouponStatus.VALID && usedAt == null && now.isBefore(validUntil)
     }
     
     // 쿠폰 사용
-    fun use(): Boolean {
+    fun use(orderId: CouponOrderId): Boolean {
         if (!isUsable()) {
             return false
         }
         
-        status = UserCouponStatus.USED
+        this.usedAt = LocalDateTime.now()
+        this.status = UserCouponStatus.USED
+        this.orderId = orderId
         return true
     }
     
@@ -69,6 +80,41 @@ class UserCoupon private constructor(
     }
     
     companion object {
+        fun create(
+            id: UserCouponId = UserCouponId.create(),
+            userId: UserId,
+            templateId: CouponTemplateId,
+            name: String,
+            description: String,
+            discountType: DiscountType,
+            discountValue: Int,
+            minimumOrderAmount: Money,
+            maximumDiscountAmount: Money?,
+            validUntil: LocalDateTime,
+            status: UserCouponStatus = UserCouponStatus.VALID,
+            orderId: CouponOrderId? = null,
+            issuedAt: LocalDateTime = LocalDateTime.now(),
+            usedAt: LocalDateTime? = null
+        ): UserCoupon {
+            return UserCoupon(
+                id = id,
+                userId = userId,
+                templateId = templateId,
+                name = name,
+                description = description,
+                discountType = discountType,
+                discountValue = discountValue,
+                minimumOrderAmount = minimumOrderAmount,
+                maximumDiscountAmount = maximumDiscountAmount,
+                validUntil = validUntil,
+                status = status,
+                orderId = orderId,
+                issuedAt = issuedAt,
+                usedAt = usedAt
+            
+            )
+        }
+        
         fun issue(userId: UserId, template: CouponTemplate): UserCoupon? {
             // 템플릿이 발급 가능한지 확인
             if (!template.isIssuable()) {

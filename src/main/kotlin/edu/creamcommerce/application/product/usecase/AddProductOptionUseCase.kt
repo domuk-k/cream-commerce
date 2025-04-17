@@ -22,6 +22,7 @@ class AddProductOptionUseCase(
             additionalPrice = Money(command.additionalPrice),
             stock = command.stock,
             sku = command.sku,
+            productId = productId
         )
         
         val updatedProduct = product.addOption(option)
