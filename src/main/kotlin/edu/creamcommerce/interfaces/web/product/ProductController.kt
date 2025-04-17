@@ -2,6 +2,7 @@ package edu.creamcommerce.interfaces.web.product
 
 import edu.creamcommerce.application.product.dto.ProductDto
 import edu.creamcommerce.application.product.dto.ProductListDto
+import edu.creamcommerce.application.product.dto.ProductOptionDto
 import edu.creamcommerce.application.product.dto.query.GetProductsQuery
 import edu.creamcommerce.application.product.dto.query.GetTopProductsQuery
 import edu.creamcommerce.application.product.dto.query.TopProductPeriod
@@ -64,7 +65,7 @@ class ProductController(
     fun addProductOption(
         @PathVariable id: String,
         @RequestBody @Valid request: AddProductOptionRequest
-    ): ResponseEntity<ApiResponse<ProductDto>> {
+    ): ResponseEntity<ApiResponse<ProductOptionDto>> {
         val updatedProduct = productFacade.addProductOption(
             ProductId(id),
             request.toCommand()

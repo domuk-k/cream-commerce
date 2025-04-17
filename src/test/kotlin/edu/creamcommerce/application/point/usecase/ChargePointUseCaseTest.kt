@@ -1,6 +1,7 @@
 package edu.creamcommerce.application.point.usecase
 
 import edu.creamcommerce.application.point.dto.command.ChargePointCommand
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.point.Point
 import edu.creamcommerce.domain.point.PointHistory
 import edu.creamcommerce.domain.point.PointHistoryRepository
@@ -16,7 +17,7 @@ class ChargePointUseCaseTest : BehaviorSpec({
     val chargePointUseCase = ChargePointUseCase(pointRepository, pointHistoryRepository)
     
     given("포인트 충전 명령이 주어졌을 때") {
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val chargeAmount = BigDecimal.valueOf(1000)
         val command = ChargePointCommand(userId = userId, amount = chargeAmount)
         

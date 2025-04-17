@@ -13,6 +13,7 @@ enum class OptionStatus {
 
 class ProductOption private constructor(
     val id: OptionId,
+    val productId: ProductId,
     val name: String,
     val sku: String,
     val additionalPrice: Money = Money(0),
@@ -23,17 +24,19 @@ class ProductOption private constructor(
 ) {
     companion object {
         fun create(
+            id: OptionId = OptionId.create(),
             name: String,
             sku: String,
+            productId: ProductId,
             additionalPrice: Money,
             stock: Int,
             lowStockThreshold: Int = 5
         ): ProductOption {
             val now = LocalDateTime.now()
-            val id = OptionId.create()
             
             val option = ProductOption(
                 id = id,
+                productId = productId,
                 name = name,
                 sku = sku,
                 additionalPrice = additionalPrice,

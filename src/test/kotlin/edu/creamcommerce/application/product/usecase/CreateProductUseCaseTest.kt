@@ -78,7 +78,7 @@ class CreateProductUseCaseTest : BehaviorSpec({
                 id = createdProductId,
                 name = command.name,
                 price = command.toMoney(),
-                options = command.options.map { it.toDomain() }
+                options = command.options.map { it.toDomain(createdProductId) }
             )
             
             every { productRepository.save(capture(productSlot)) } returns savedProduct
@@ -106,12 +106,14 @@ class CreateProductUseCaseTest : BehaviorSpec({
     companion object {
         
         fun createTestProductOption(
+            productId: ProductId,
             id: OptionId,
             name: String,
             stock: Int,
             additionalPrice: Int
         ): ProductOption {
             return ProductOption.create(
+                productId = productId,
                 name = name,
                 sku = "TEST-SKU-${id.value}",
                 additionalPrice = Money(additionalPrice),

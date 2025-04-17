@@ -7,11 +7,13 @@ import edu.creamcommerce.domain.product.ProductId
 import edu.creamcommerce.domain.product.ProductRepository
 import edu.creamcommerce.domain.product.ProductStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProductStatusUseCase(
     private val productRepository: ProductRepository
 ) {
+    @Transactional
     operator fun invoke(productId: ProductId, command: UpdateProductStatusCommand): ProductDto {
         val product = productRepository.findById(productId)
             ?: throw NoSuchElementException("상품을 찾을 수 없습니다: ${productId.value}")

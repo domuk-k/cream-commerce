@@ -15,20 +15,23 @@ class CreateProductUseCase(
     private val productRepository: ProductRepository
 ) {
     operator fun invoke(command: CreateProductCommand): ProductDto {
-        val options = command.options.map { optionCommand ->
-            ProductOption.create(
-                name = optionCommand.name,
-                additionalPrice = Money(optionCommand.additionalPrice ?: BigDecimal.ZERO),
-                stock = optionCommand.stock,
-                sku = optionCommand.sku,
-            )
-        }
         
         val product = Product.create(
             name = command.name,
             price = command.toMoney(),
-            options = options,
         )
+        
+        command.options.forEach { optionCommand ->
+            product.addOption(
+                ProductOption.create(
+                    name = optionCommand.name,
+                    additionalPrice = Money(optionCommand.additionalPrice ?: BigDecimal.ZERO),
+                    stock = optionCommand.stock,
+                    sku = optionCommand.sku,
+                    productId = product.id
+                )
+            )
+        }
         
         val savedProduct = productRepository.save(product)
         

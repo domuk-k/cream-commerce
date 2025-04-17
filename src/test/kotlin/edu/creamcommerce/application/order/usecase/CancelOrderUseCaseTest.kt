@@ -1,6 +1,7 @@
 package edu.creamcommerce.application.order.usecase
 
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.order.*
 import edu.creamcommerce.domain.payment.Payment
 import edu.creamcommerce.domain.payment.PaymentRepository
@@ -31,7 +32,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
     
     given("PENDING 상태의 주문이 있을 때") {
         val orderId = OrderId.create()
-        val mockUserId = "test-user"
+        val mockUserId = UserId.create()
         
         val order = mockk<Order>().apply {
             every { id } returns orderId
@@ -61,7 +62,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
     
     given("PAID 상태의 주문과 결제가 있을 때") {
         val orderId = OrderId.create()
-        val mockUserId = "test-user"
+        val mockUserId = UserId.create()
         val productId = ProductId.create()
         val orderAmount = Money(2000)
         
@@ -103,7 +104,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
         every { pointRepository.findByUserId(mockUserId) } returns point
         
         val product = mockk<Product>().apply {
-            every { increaseStock(any()) } returns this
+            every { increaseStock(any(), 2) } returns this
         }
         
         every { productRepository.findById(productId) } returns product
@@ -116,7 +117,7 @@ class CancelOrderUseCaseTest : BehaviorSpec({
             then("주문이 취소되고 결제가 환불되어야 한다") {
                 verify { payment.requestRefund() }
                 verify { point.charge(orderAmount.amount) }
-                verify { product.increaseStock(2) }
+                verify { product.increaseStock(any(), 2) }
                 verify { productRepository.save(product) }
                 verify { payment.refund() }
                 verify { order.cancel() }

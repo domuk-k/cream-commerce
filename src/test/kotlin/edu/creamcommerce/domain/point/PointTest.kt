@@ -1,5 +1,6 @@
 package edu.creamcommerce.domain.point
 
+import edu.creamcommerce.domain.coupon.UserId
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -7,7 +8,7 @@ import java.math.BigDecimal
 
 class PointTest : BehaviorSpec({
     given("포인트가 생성되었을 때") {
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val initialAmount = BigDecimal.valueOf(1000)
         val point = Point.create(userId = userId, amount = initialAmount)
         

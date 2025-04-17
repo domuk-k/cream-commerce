@@ -8,10 +8,7 @@ import edu.creamcommerce.application.product.dto.command.ProductOptionCommand
 import edu.creamcommerce.application.product.dto.query.GetProductsQuery
 import edu.creamcommerce.application.product.usecase.*
 import edu.creamcommerce.domain.common.Money
-import edu.creamcommerce.domain.product.InventoryStatus
-import edu.creamcommerce.domain.product.Product
-import edu.creamcommerce.domain.product.ProductId
-import edu.creamcommerce.domain.product.ProductOption
+import edu.creamcommerce.domain.product.*
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -145,11 +142,12 @@ class ProductFacadeTest : BehaviorSpec({
                 name = name,
                 description = "테스트 상품 설명",
                 price = price,
-                status = "Active",
+                status = ProductStatus.Active,
                 stockStatus = "InStock",
                 options = listOf(
                     ProductOptionDto(
                         id = "option-1",
+                        productId = id,
                         name = "기본 옵션",
                         additionalPrice = BigDecimal.ZERO,
                         stock = 100,
@@ -172,7 +170,8 @@ class ProductFacadeTest : BehaviorSpec({
                 name = "기본 옵션",
                 sku = "TEST-SKU-001",
                 additionalPrice = Money(0),
-                stock = 100
+                stock = 100,
+                productId = id
             )
             
             val optionsField = Product::class.java.getDeclaredField("_options")

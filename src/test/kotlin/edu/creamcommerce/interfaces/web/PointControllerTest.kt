@@ -7,6 +7,8 @@ import edu.creamcommerce.application.point.dto.PointHistoryListDto
 import edu.creamcommerce.application.point.dto.command.ChargePointCommand
 import edu.creamcommerce.application.point.dto.command.UsePointCommand
 import edu.creamcommerce.application.point.facade.PointFacade
+import edu.creamcommerce.domain.coupon.UserId
+import edu.creamcommerce.domain.point.PointHistoryId
 import edu.creamcommerce.domain.point.PointHistoryType
 import edu.creamcommerce.domain.point.PointId
 import edu.creamcommerce.interfaces.web.point.PointController
@@ -33,8 +35,8 @@ class PointControllerTest : ShouldSpec({
     context("포인트 조회") {
         should("GET /api/points/users/{userId} 요청 시 사용자의 포인트 정보를 반환한다") {
             // given
-            val userId = "test-user-id"
-            val pointDto = createTestPointDto("point-id", userId)
+            val userId = UserId("test-user-id")
+            val pointDto = createTestPointDto(PointId("point-id"), userId)
             
             every { pointFacade.getPointByUserId(userId) } returns pointDto
             
@@ -54,7 +56,7 @@ class PointControllerTest : ShouldSpec({
         should("POST /api/points/charge 요청 시 포인트가 충전되고 정보를 반환한다") {
             // given
             val request = PointRequest.Charge(
-                userId = "test-user-id",
+                userId = UserId("test-user-id"),
                 amount = BigDecimal.valueOf(1000)
             )
             
@@ -64,7 +66,7 @@ class PointControllerTest : ShouldSpec({
             )
             
             val chargedPointDto = createTestPointDto(
-                id = "point-id",
+                id = PointId("point-id"),
                 userId = request.userId,
                 amount = request.amount
             )
@@ -89,7 +91,7 @@ class PointControllerTest : ShouldSpec({
         should("POST /api/points/use 요청 시 포인트가 사용되고 정보를 반환한다") {
             // given
             val request = PointRequest.Use(
-                userId = "test-user-id",
+                userId = UserId("test-user-id"),
                 amount = BigDecimal.valueOf(500)
             )
             
@@ -100,7 +102,7 @@ class PointControllerTest : ShouldSpec({
             
             val remainingAmount = BigDecimal.valueOf(500) // 1000 - 500
             val usedPointDto = createTestPointDto(
-                id = "point-id",
+                id = PointId("point-id"),
                 userId = request.userId,
                 amount = remainingAmount
             )
@@ -124,16 +126,16 @@ class PointControllerTest : ShouldSpec({
     context("포인트 이력 조회") {
         should("GET /api/points/{pointId}/histories 요청 시 포인트 이력 목록을 반환한다") {
             // given
-            val pointId = "test-point-id"
+            val pointId = PointId("test-point-id")
             val historyListDto = PointHistoryListDto(
                 histories = listOf(
                     createTestPointHistoryDto(
-                        id = "history-1",
+                        id = PointHistoryId("history-1"),
                         pointId = pointId,
                         type = PointHistoryType.CHARGE
                     ),
                     createTestPointHistoryDto(
-                        id = "history-2",
+                        id = PointHistoryId("history-2"),
                         pointId = pointId,
                         type = PointHistoryType.USE
                     )
@@ -141,7 +143,7 @@ class PointControllerTest : ShouldSpec({
                 total = 2
             )
             
-            every { pointFacade.getPointHistories(PointId(pointId)) } returns historyListDto
+            every { pointFacade.getPointHistories(pointId) } returns historyListDto
             
             // when & then
             mockMvc.perform(
@@ -152,14 +154,14 @@ class PointControllerTest : ShouldSpec({
                 .andExpect(jsonPath("$.data.histories.length()").value(2))
                 .andExpect(jsonPath("$.data.total").value(2))
             
-            verify { pointFacade.getPointHistories(PointId(pointId)) }
+            verify { pointFacade.getPointHistories(pointId) }
         }
     }
 }) {
     companion object {
         fun createTestPointDto(
-            id: String,
-            userId: String = "test-user",
+            id: PointId = PointId("test-user"),
+            userId: UserId = UserId("test-user"),
             amount: BigDecimal = BigDecimal.valueOf(1000)
         ): PointDto {
             return PointDto(
@@ -172,8 +174,8 @@ class PointControllerTest : ShouldSpec({
         }
         
         fun createTestPointHistoryDto(
-            id: String,
-            pointId: String,
+            id: PointHistoryId = PointHistoryId("test-history"),
+            pointId: PointId = PointId("test-user"),
             type: PointHistoryType,
             amount: BigDecimal = BigDecimal.valueOf(1000),
             balance: BigDecimal = BigDecimal.valueOf(1000)

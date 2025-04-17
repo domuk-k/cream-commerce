@@ -1,6 +1,6 @@
 package edu.creamcommerce.application.product.usecase
 
-import edu.creamcommerce.application.product.dto.ProductDto
+import edu.creamcommerce.application.product.dto.ProductOptionDto
 import edu.creamcommerce.application.product.dto.command.AddProductOptionCommand
 import edu.creamcommerce.application.product.dto.toDto
 import edu.creamcommerce.domain.common.Money
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 class AddProductOptionUseCase(
     private val productRepository: ProductRepository
 ) {
-    operator fun invoke(productId: ProductId, command: AddProductOptionCommand): ProductDto {
+    operator fun invoke(productId: ProductId, command: AddProductOptionCommand): ProductOptionDto {
         val product = productRepository.findById(productId)
             ?: throw NoSuchElementException("상품을 찾을 수 없습니다: ${productId.value}")
         
@@ -22,10 +22,11 @@ class AddProductOptionUseCase(
             additionalPrice = Money(command.additionalPrice),
             stock = command.stock,
             sku = command.sku,
+            productId = productId
         )
         
         val updatedProduct = product.addOption(option)
-        val savedProduct = productRepository.save(updatedProduct)
-        return savedProduct.toDto()
+        productRepository.save(updatedProduct)
+        return option.toDto()
     }
 } 

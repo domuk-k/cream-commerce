@@ -4,6 +4,7 @@ import edu.creamcommerce.application.coupon.dto.command.*
 import edu.creamcommerce.application.coupon.dto.query.*
 import edu.creamcommerce.application.coupon.facade.CouponFacade
 import edu.creamcommerce.domain.common.Money
+import edu.creamcommerce.domain.coupon.CouponOrderId
 import edu.creamcommerce.domain.coupon.CouponTemplateId
 import edu.creamcommerce.domain.coupon.UserCouponId
 import edu.creamcommerce.domain.coupon.UserId
@@ -109,7 +110,8 @@ class CouponController(
         val command = UseCouponCommand(
             userId = UserId(request.userId),
             couponId = UserCouponId(request.couponId),
-            orderAmount = Money(request.orderAmount)
+            orderAmount = Money(request.orderAmount),
+            orderId = CouponOrderId(request.orderId)
         )
         
         val result = couponFacade.useCoupon(command)

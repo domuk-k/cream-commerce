@@ -1,6 +1,5 @@
 package edu.creamcommerce.interfaces.web.coupon
 
-import edu.creamcommerce.domain.common.Money
 import edu.creamcommerce.domain.coupon.DiscountType
 import java.time.LocalDateTime
 
@@ -18,10 +17,6 @@ data class CreateCouponTemplateRequest(
     val endAt: LocalDateTime
 )
 
-data class ChangeCouponTemplateStatusRequest(
-    val templateId: String
-)
-
 data class IssueCouponRequest(
     val userId: String,
     val templateId: String
@@ -30,9 +25,6 @@ data class IssueCouponRequest(
 data class UseCouponRequest(
     val userId: String,
     val couponId: String,
-    val orderAmount: Int
+    val orderAmount: Int,
+    val orderId: String,
 )
-
-data class RevokeCouponRequest(
-    val couponId: String
-) 

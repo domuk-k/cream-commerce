@@ -14,7 +14,7 @@ data class OrderDto(
     val userId: UserId,
     val status: String,
     val totalAmount: Money,
-    val shippingAddress: String,
+    val shippingAddress: String? = "",
     val items: List<OrderItemDto>,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime

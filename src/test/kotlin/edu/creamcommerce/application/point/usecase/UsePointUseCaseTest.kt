@@ -1,6 +1,7 @@
 package edu.creamcommerce.application.point.usecase
 
 import edu.creamcommerce.application.point.dto.command.UsePointCommand
+import edu.creamcommerce.domain.coupon.UserId
 import edu.creamcommerce.domain.point.Point
 import edu.creamcommerce.domain.point.PointHistory
 import edu.creamcommerce.domain.point.PointHistoryRepository
@@ -20,7 +21,7 @@ class UsePointUseCaseTest : BehaviorSpec({
     val usePointUseCase = UsePointUseCase(pointRepository, pointHistoryRepository)
     
     given("포인트 사용 명령이 주어졌을 때") {
-        val userId = "test-user"
+        val userId = UserId("test-user")
         val useAmount = BigDecimal.valueOf(500)
         val command = UsePointCommand(userId = userId, amount = useAmount)
         
